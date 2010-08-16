@@ -1,0 +1,151 @@
+/*=========================================================================
+
+  Program:   OpenIGTLink Library
+  Module:    $HeadURL: http://osfe.org/OpenIGTLink/Source/org/medcare/igtl/network/SocketServer.java $
+  Language:  java
+  Date:      $Date: 2010-08-14 10:37:44 +0200 (ven., 13 nov. 2009) $
+  Version:   $Revision: 0ab$
+
+  Copyright (c) Absynt Technologies Ltd. All rights reserved.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.  See the above copyright notices for more information.
+
+=========================================================================*/
+
+package org.medcare.igtl.network;
+
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.IOException;
+
+/**
+ * <p>
+ * The class can be used by first connecting to a server using the SocketClient
+ * {@link org.apache.commons.net.SocketClient#connect connect} method.
+ * <p>
+ * 
+ * @author <a href="mailto:andleg@osfe.org">Andre Charles Legendre
+ *         </a>
+ * @version 0.1a (09/06/2010)
+ * 
+ */
+
+public class SocketServer implements Runnable {
+	static SocketListener sSock = null;
+	MessageQueueManager messageQueue = null;
+
+	//private int remoteport;
+
+	private OutputStream outstr;
+
+	/***************************************************************************
+	 * Default SocketServer constructor.
+	 **************************************************************************/
+	public SocketServer() {
+	}
+
+	public SocketServer(int remoteport) {
+		sSock = new SocketListener(remoteport);
+		messageQueue = new MessageQueue();
+		try {
+			Thread reader = new Thread(new SocketServer());
+			reader.start();
+			outstr = sSock.getOutputStream();
+		} catch (Exception e) {
+			System.err.println("Exception while connecting:" + e.getMessage());
+			System.exit(1);
+		}
+	}
+
+	/***************************************************************************
+	 * Sends a String.
+	 * <p>
+	 * 
+	 * @throws IOException
+	 *             - Exception in I/O.
+	 *             <p>
+	 * @param string
+	 *            - String String.
+	 **************************************************************************/
+	final public synchronized void sendString(String string) throws IOException {
+		try {
+			outstr.write(string.getBytes());
+			outstr.flush();
+		} catch (Exception e) {
+			System.err.println("Exception while sendString to socket:"
+					+ e.getMessage());
+		}
+	}
+
+	/***************************************************************************
+	 * Sends bytes
+	 * <p>
+	 * 
+	 * @throws IOException
+	 *             - Exception in I/O.
+	 *             <p>
+	 * @param bytes
+	 *            - byte[] array.
+	 **************************************************************************/
+	final public synchronized void sendBytes(byte[] bytes) throws IOException {
+		// int ret_read = 0;
+		// ret_read = System.in.read(buff);
+		try {
+			// outstr.write(buff, 0 , ret_read);
+			outstr.write(bytes);
+			outstr.flush();
+		} catch (Exception e) {
+			System.err.println("Exception while sendBytes to socket:"
+					+ e.getMessage());
+		}
+	}
+
+	/***************************************************************************
+	 * Main for the SocketServer.
+	 **************************************************************************/
+	public static void disconnect() throws IOException {
+		try {
+			sSock.disconnect();
+		} catch (Exception e) {
+			System.err.println("Exception while disconnect socket:"
+					+ e.getMessage());
+		}
+	}
+
+	/***************************************************************************
+	 * Reader thread. Reads lines from the SocketListener and add them to the MessageQueueManager
+	 * 
+	 **************************************************************************/
+	public void run() {
+		InputStream instr = sSock.getInputStream();
+		// System.out.println("SocketServer !!!!!!!!!!!!!!!!!!!!!!!!!!
+		// STREAM");
+
+		try {
+			byte[] buff = new byte[1024];
+			int ret_read = 0;
+			// System.out.println("JE LIS");
+			do {
+				ret_read = instr.read(buff);
+				if (ret_read > 0) {
+					//System.out.print(new String(buff, 0, ret_read));
+					messageQueue.addMessage(buff);
+				}
+			} while (ret_read >= 0);
+			// System.out.println("J'AI LU");
+		} catch (Exception e) {
+			System.err.println("Exception while reading socket:"
+					+ e.getMessage());
+		}
+
+		try {
+			if (sSock.isConnected())
+				sSock.disconnect();
+		} catch (Exception e) {
+			System.err.println("Exception while closing socket:"
+					+ e.getMessage());
+		}
+	}
+}
