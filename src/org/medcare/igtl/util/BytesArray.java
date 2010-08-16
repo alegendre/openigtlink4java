@@ -399,11 +399,12 @@ public class BytesArray {
 	/**
 	 *** Calculate Add a <code>timestamp</code> value to the bytesArray
 	 *** 
-	 *** @return The number of bytes written
+	 *** @return The long value of timeStamp
 	 **/
-	public int putTimeStamp() {
+	public long putTimeStamp() {
 		byte n[] = encodeTimeStamp(System.currentTimeMillis());
-		return putBytes(n);
+		putBytes(n);
+		return decodeTimeStamp(n);
 	}
 
 	/**
@@ -429,10 +430,12 @@ public class BytesArray {
 	 *            The number of bytes to calaculate from
 	 *** @param crc
 	 *            actual crc value <code>n</code>
-	 *** @return The number of bytes written
+	 *** @return The long value of crc
 	 **/
-	public int putCrc(byte[] buf, int len, long crc) {
-		return putLong(crc64(buf, len, crc), 8);
+	public long putCrc(byte[] buf, int len, long crc) {
+		crc = crc64(buf, len, crc);
+		putLong(crc, 8);
+		return crc;
 	}
 
 	/**

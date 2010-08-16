@@ -23,8 +23,8 @@ package org.medcare.igtl.util;
 public class Header {
 	int base = 1000000000; /* 10^9 */
 	long version; // unsigned int 16bits
-	String type; // char 12 bits
-	String name; // char 20 bits
+	String deviceType; // char 12 bits
+	String deviceName; // char 20 bits
 	long timestamp; // unsigned int 64 bits
 	long body_size; // unsigned int 64 bits
 	long crc; // unsigned int 64 bits
@@ -57,7 +57,7 @@ public class Header {
 		for (int m = 0; m < 12; m++) {
 			typeArray[m] = 0;
 		}
-		type = new String(typeArray, bytesArray.charset);
+		deviceType = new String(typeArray, bytesArray.charset);
 		int len = _type.length();
 		len = (len <= 12) ? len : 12;
 		System.arraycopy(typeArray, 0, _type.toCharArray(), 0, len);
@@ -83,6 +83,46 @@ public class Header {
 	/**
 	 *** Destination Constructor
 	 *** 
+	 * @param version
+	 *            ; // Version number unsigned int 16bits
+	 * @param deviceType
+	 *            ; // Type name of data char 12 bits
+	 * @param deviceName
+	 *            ; // Unique device name char 20 bits
+	 * @param body
+	 *            ; // body in bytes
+	 **/
+	public Header(long version, String deviceType, String deviceName, byte body[]) {
+		bytesArray = new BytesArray();
+		this.version = version;
+		bytesArray.putLong(version, 2);
+		byte typeArray[] = new byte[12];
+		for (int m = 0; m < 12; m++) {
+			typeArray[m] = 0;
+		}
+		deviceType = new String(typeArray, bytesArray.charset);
+		int len = deviceType.length();
+		len = (len <= 12) ? len : 12;
+		System.arraycopy(typeArray, 0, deviceType.toCharArray(), 0, len);
+		bytesArray.putString(new String(typeArray));
+		byte nameArray[] = new byte[20];
+		for (int m = 0; m < 20; m++) {
+			nameArray[m] = 0;
+		}
+		len = deviceName.length();
+		len = (len <= 20) ? len : 20;
+		System.arraycopy(nameArray, 0, deviceName.toCharArray(), 0, len);
+		bytesArray.putString(new String(nameArray));
+		this.timestamp = bytesArray.putTimeStamp();
+		this.body_size = body.length;
+		bytesArray.putLong(body_size, 8);
+		this.crc = bytesArray.putCrc(body, body.length, 0L);
+	}
+	// ------------------------------------------------------------------------
+
+	/**
+	 *** Destination Constructor
+	 *** 
 	 * @param bytes
 	 *            bytes doit contenir 58 bytes of the header
 	 **/
@@ -90,8 +130,8 @@ public class Header {
 		bytesArray = new BytesArray();
 		bytesArray.putBytes(bytes);
 		version = bytesArray.getLong(2); // unsigned int 16bits
-		type = bytesArray.getString(12); // char 12 bits
-		name = bytesArray.getString(20); // char 20 bits
+		deviceType = bytesArray.getString(12); // char 12 bits
+		deviceName = bytesArray.getString(20); // char 20 bits
 		timestamp = bytesArray.decodeTimeStamp(bytesArray.getBytes(8));
 		body_size = bytesArray.getLong(8); // unsigned int 64 bits
 		crc = bytesArray.getLong(8); // unsigned int 64 bits
@@ -113,10 +153,10 @@ public class Header {
 	/**
 	 *** Type name of data
 	 *** 
-	 * @return The current type of the bytesArray
+	 * @return The type of the device
 	 **/
-	public String getType() {
-		return this.type;
+	public String getDeviceType() {
+		return this.deviceType;
 	}
 
 	// ------------------------------------------------------------------------
@@ -124,10 +164,10 @@ public class Header {
 	/**
 	 *** Unique device name.
 	 *** 
-	 * @return The current name of the bytesArray
+	 * @return The current name of the device
 	 **/
-	public String getName() {
-		return this.name;
+	public String getDeviceName() {
+		return this.deviceName;
 	}
 
 	// ------------------------------------------------------------------------
@@ -135,7 +175,7 @@ public class Header {
 	/**
 	 *** TimeStamp or 0 if unused.
 	 *** 
-	 * @return The current timestamp of the bytesArray
+	 * @return The timestamp at the creation of the header
 	 **/
 	public double getTimeStamp() {
 		return this.timestamp;
