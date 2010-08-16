@@ -16,7 +16,7 @@ public class OpenIGTMessage {
 	private static long VERSION_2 = 2L;
 
 	/**
-	 *** Destination Constructor
+	 *** Constructor to be used to create message to getBytes to send them
 	 *** 
 	 * @param deviceType
 	 *            Device Type
@@ -25,11 +25,26 @@ public class OpenIGTMessage {
 	 * @param body
 	 *            bytes array containing message body
 	 **/
-	public OpenIGTMessage(String deviceType, String deviceName, byte body[]) {
+	public OpenIGTMessage(String deviceType, String deviceName, byte[] body) {
 		this.deviceType = deviceType;
 		this.deviceName = deviceName;
 		this.body = body;
 		this.header = new Header(VERSION_2, deviceType, deviceName, body);
+	}
+
+	/**
+	 *** Constructor to be used to build messages from incoming bytes
+	 *** 
+	 * @param header
+	 *            header of this message
+	 * @param body
+	 *            bytes array containing message body
+	 **/
+	public OpenIGTMessage(Header header, byte[] body) {
+		this.header = header;
+		this.deviceType = header.getDeviceType();
+		this.deviceName = header.getDeviceName();
+		this.body = body;
 	}
 
 	/**
@@ -66,5 +81,18 @@ public class OpenIGTMessage {
 	 **/
 	public byte[] getBody() {
 		return this.body;
+	}
+
+	/**
+	 *** Bytes to be sent.
+	 *** 
+	 * @return bytes array containing the message
+	 **/
+	public byte[] getBytes() {
+		byte[] header_Bytes = header.getBytes();
+		byte[] bytes = new byte[body.length + 58];
+		System.arraycopy(header_Bytes, 0, bytes, 0, 58);
+		System.arraycopy(body, 0, bytes, 59, body.length);
+		return bytes;
 	}
 }
