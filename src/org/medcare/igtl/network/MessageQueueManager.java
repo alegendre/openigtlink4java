@@ -21,13 +21,15 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.medcare.igtl.util.Header;
 
 /**
- * One MessageQueueManager is created by each ServerThread to
- * add MessageHandler to MessageQueueManager queue as soon as they receive messages.
- * MessageQueueManager will perform MessageHandler respecting the order.
- * Using eventually ServerThread to send responses to its ServerThread client.
+ * One MessageQueueManager is created by each ServerThread to add MessageHandler
+ * to MessageQueueManager queue as soon as they receive messages.
+ * MessageQueueManager will perform MessageHandler respecting the order. Using
+ * eventually ServerThread to send responses to its ServerThread client.
+ * 
+ * @author Andre Charles Legendre
  */
-public class MessageQueueManager  extends Thread {
-private static String VERSION = "0.1a";
+public class MessageQueueManager extends Thread {
+	private static String VERSION = "0.1a";
 
 	private long sleep;
 	public ConcurrentLinkedQueue<MessageHandler> openIGT_Queue = new ConcurrentLinkedQueue<MessageHandler>();
@@ -36,13 +38,15 @@ private static String VERSION = "0.1a";
 
 	/***************************************************************************
 	 * Default MessageQueueManager constructor.
-	 * @param serverThread to use to send responses to OpenIGTclient
-	 *
+	 * 
+	 * @param serverThread
+	 *            to use to send responses to OpenIGTclient
+	 * 
 	 **************************************************************************/
-	    public MessageQueueManager(ServerThread serverThread) {
-			super("MessageQueueManager");
-			this.serverThread = serverThread;
-	    }
+	public MessageQueueManager(ServerThread serverThread) {
+		super("MessageQueueManager");
+		this.serverThread = serverThread;
+	}
 
 	/**
 	 * Starts the thread and process requests in queue
@@ -53,15 +57,17 @@ private static String VERSION = "0.1a";
 			try {
 				Thread.sleep(sleep); // Wait 100 milli before alive again
 				if (!openIGT_Queue.isEmpty()) {
-					//On prefere perdre des impressions que rester coince
-					MessageHandler messageHandler = (MessageHandler) openIGT_Queue.poll();
+					// On prefere perdre des impressions que rester coince
+					MessageHandler messageHandler = (MessageHandler) openIGT_Queue
+							.poll();
 					if (messageHandler != null) {
 						try {
 							res = messageHandler.performRequest();
 							if (!res)
 								System.out.println("PB messageHandler ");
 						} catch (Exception e) {
-							System.out.println("PB messageHandler " + e.getLocalizedMessage());
+							System.out.println("PB messageHandler "
+									+ e.getLocalizedMessage());
 						} finally {
 							System.out.println("OK");
 						}
@@ -77,7 +83,8 @@ private static String VERSION = "0.1a";
 
 	/**
 	 * add a new request to the request queue
-	 * @param header 
+	 * 
+	 * @param header
 	 * 
 	 * @param body
 	 * 
@@ -97,8 +104,7 @@ private static String VERSION = "0.1a";
 	}
 
 	/**
-	 *** Gets the current sleep time value
-         * return@ The sleep time value
+	 *** Gets the current sleep time value return@ The sleep time value
 	 **/
 	public long getSleepTime() {
 		return sleep;
@@ -114,8 +120,7 @@ private static String VERSION = "0.1a";
 	}
 
 	/**
-	 *** Gets the current version
-         * return@ The version value
+	 *** Gets the current version return@ The version value
 	 **/
 	public String getVersion() {
 		return VERSION;

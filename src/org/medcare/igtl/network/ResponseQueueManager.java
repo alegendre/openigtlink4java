@@ -21,12 +21,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.medcare.igtl.util.Header;
 
 /**
- * Each OpenIGTClient create its own ResponseQueueManager to queue response they get from server.
- * ResponseQueueManager will perform ResponseHandler added in them queue respecting the order.
+ * Each OpenIGTClient create its own ResponseQueueManager to queue response they
+ * get from server. ResponseQueueManager will perform ResponseHandler added in
+ * them queue respecting the order.
  * 
+ * @author Andre Charles Legendre
  */
-public class ResponseQueueManager  extends Thread {
-private static String VERSION = "0.1a";
+public class ResponseQueueManager extends Thread {
+	private static String VERSION = "0.1a";
 
 	private long sleep;
 	public ConcurrentLinkedQueue<ResponseHandler> openIGT_Queue = new ConcurrentLinkedQueue<ResponseHandler>();
@@ -35,9 +37,9 @@ private static String VERSION = "0.1a";
 	/***************************************************************************
 	 * Default ResponseQueueManager constructor.
 	 **************************************************************************/
-	    public ResponseQueueManager() {
+	public ResponseQueueManager() {
 		super("ResponseQueueManager");
-	    }
+	}
 
 	/**
 	 * Starts the thread reading responses and adding them to the responseQueue
@@ -48,15 +50,17 @@ private static String VERSION = "0.1a";
 			try {
 				Thread.sleep(sleep); // Wait 100 milli before alive again
 				if (!openIGT_Queue.isEmpty()) {
-					//On prefere perdre des impressions que rester coince
-					ResponseHandler responseHandler = (ResponseHandler) openIGT_Queue.poll();
+					// On prefere perdre des impressions que rester coince
+					ResponseHandler responseHandler = (ResponseHandler) openIGT_Queue
+							.poll();
 					if (responseHandler != null) {
 						try {
 							res = responseHandler.performResponse();
 							if (!res)
 								System.out.println("PB responseHandler ");
 						} catch (Exception e) {
-							System.out.println("PB responseHandler " + e.getLocalizedMessage());
+							System.out.println("PB responseHandler "
+									+ e.getLocalizedMessage());
 						} finally {
 							System.out.println("OK");
 						}
@@ -72,7 +76,8 @@ private static String VERSION = "0.1a";
 
 	/**
 	 * add a new response to the response queue
-	 * @param header 
+	 * 
+	 * @param header
 	 * 
 	 * @param body
 	 * 
@@ -92,8 +97,7 @@ private static String VERSION = "0.1a";
 	}
 
 	/**
-	 *** Gets the current sleep time value
-         * return@ The sleep time value
+	 *** Gets the current sleep time value return@ The sleep time value
 	 **/
 	public long getSleepTime() {
 		return sleep;
@@ -109,8 +113,7 @@ private static String VERSION = "0.1a";
 	}
 
 	/**
-	 *** Gets the current version
-         * return@ The version value
+	 *** Gets the current version return@ The version value
 	 **/
 	public String getVersion() {
 		return VERSION;

@@ -19,29 +19,34 @@ package org.medcare.igtl.network;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * RequestQueueManager create its own OpenIGTClient connected to one OpenIGTServer.
- * Application add Messages request to RequestQueueManager queue.
+ * RequestQueueManager create its own OpenIGTClient connected to one
+ * OpenIGTServer. Application add Messages request to RequestQueueManager queue.
  * OpenIGTClient will send Messages to its OpenIGTServer respecting the order.
- *
+ * 
+ * @author Andre Charles Legendre
  */
-public class RequestQueueManager extends Thread  {
-private static String VERSION = "0.1a";
+public class RequestQueueManager extends Thread {
+	private static String VERSION = "0.1a";
 
 	private long sleep;
 	public ConcurrentLinkedQueue<byte[]> openIGT_Queue = new ConcurrentLinkedQueue<byte[]>();
 	private boolean alive = true;
-	private OpenIGTClient openIGTClient= null;
+	private OpenIGTClient openIGTClient = null;
+
 	/***************************************************************************
 	 * Default RequestQueueManager constructor.
-	 * @param host to be connected
 	 * 
-	 * @param port of the host
+	 * @param host
+	 *            to be connected
+	 * 
+	 * @param port
+	 *            of the host
 	 * 
 	 **************************************************************************/
-	    public RequestQueueManager(String host, int port) {
+	public RequestQueueManager(String host, int port) {
 		super("RequestQueueManager");
 		this.openIGTClient = new OpenIGTClient(host, port);
-	    }
+	}
 
 	/**
 	 * Starts the thread and process requests in queue
@@ -52,15 +57,17 @@ private static String VERSION = "0.1a";
 			try {
 				Thread.sleep(sleep); // Wait 100 milli before alive again
 				if (!openIGT_Queue.isEmpty()) {
-					//On prefere perdre des impressions que rester coince
+					// On prefere perdre des impressions que rester coince
 					byte[] bytes = (byte[]) openIGT_Queue.poll();
 					if (bytes != null) {
 						try {
 							res = openIGTClient.sendBytes(bytes);
 							if (!res)
-								System.out.println("PB openIGTClient.sendBytes ");
+								System.out
+										.println("PB openIGTClient.sendBytes ");
 						} catch (Exception e) {
-							System.out.println("PB openIGTClient.sendBytes " + e.getLocalizedMessage());
+							System.out.println("PB openIGTClient.sendBytes "
+									+ e.getLocalizedMessage());
 						} finally {
 							System.out.println("OK");
 						}
@@ -95,8 +102,7 @@ private static String VERSION = "0.1a";
 	}
 
 	/**
-	 *** Gets the current sleep time value
-         * return@ The sleep time value
+	 *** Gets the current sleep time value return@ The sleep time value
 	 **/
 	public long getSleepTime() {
 		return sleep;
@@ -112,8 +118,7 @@ private static String VERSION = "0.1a";
 	}
 
 	/**
-	 *** Gets the current version
-         * return@ The version value
+	 *** Gets the current version return@ The version value
 	 **/
 	public String getVersion() {
 		return VERSION;

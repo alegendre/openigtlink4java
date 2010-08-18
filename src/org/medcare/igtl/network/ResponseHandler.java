@@ -6,9 +6,9 @@ package org.medcare.igtl.network;
 import org.medcare.igtl.util.Header;
 
 /**
- * Perform response data correpondind to the message received
- * performResponse methods must be adapted corresponding to the need of each use
- *
+ * Perform response data correpondind to the message received performResponse
+ * methods must be adapted corresponding to the need of each use
+ * 
  * @author Andre Charles Legendre
  */
 public class ResponseHandler {
@@ -27,25 +27,34 @@ public class ResponseHandler {
 	int IGTL_STATUS_OVERFLOW = 8; /* Overflow / Can't be reached */
 	int IGTL_STATUS_CHECKSUM_ERROR = 9; /* Checksum error */
 	int IGTL_STATUS_CONFIG_ERROR = 10; /* Configuration error */
-	int IGTL_STATUS_RESOURCE_ERROR = 11; /* Not enough resource (memory, storage etc) */
+	int IGTL_STATUS_RESOURCE_ERROR = 11; /*
+										 * Not enough resource (memory, storage
+										 * etc)
+										 */
 	int IGTL_STATUS_ILLEGAL_INSTRUCTION = 12; /* Illegal/Unknown instruction */
-	int IGTL_STATUS_NOT_READY = 13; /* Device not ready (starting up)*/
-	int IGTL_STATUS_MANUAL_MODE = 14; /* Manual mode (device does not accept commands) */
+	int IGTL_STATUS_NOT_READY = 13; /* Device not ready (starting up) */
+	int IGTL_STATUS_MANUAL_MODE = 14; /*
+									 * Manual mode (device does not accept
+									 * commands)
+									 */
 	int IGTL_STATUS_DISABLED = 15; /* Device disabled */
 	int IGTL_STATUS_NOT_PRESENT = 16; /* Device not present */
 	int IGTL_STATUS_UNKNOWN_VERSION = 17; /* Device version not known */
 	int IGTL_STATUS_HARDWARE_FAILURE = 18; /* Hardware failure */
 	int IGTL_STATUS_SHUT_DOWN = 19; /* Exiting / shut down in progress */
 
-	int TYPE_ENTRY_ONLY = 1; //Trajectory type
-	int TYPE_TARGET_ONLY = 2; //Trajectory type
-	int TYPE_ENTRY_TARGET = 3; //Trajectory type
+	int TYPE_ENTRY_ONLY = 1; // Trajectory type
+	int TYPE_TARGET_ONLY = 2; // Trajectory type
+	int TYPE_ENTRY_TARGET = 3; // Trajectory type
 
 	/***************************************************************************
 	 * Default ResponseHandler constructor.
-	 * @param header of the response
 	 * 
-	 * @param body of the response
+	 * @param header
+	 *            of the response
+	 * 
+	 * @param body
+	 *            of the response
 	 * 
 	 **************************************************************************/
 	public ResponseHandler(Header header, byte[] body) {
@@ -54,8 +63,8 @@ public class ResponseHandler {
 	}
 
 	/**
-	 * Perform the responsejob
-         * performResponse methods must be adapted corresponding to the need of each use
+	 * Perform the responsejob performResponse methods must be adapted
+	 * corresponding to the need of each use
 	 * 
 	 * @return True if response job performed successfull
 	 * @throws Exception
@@ -63,50 +72,50 @@ public class ResponseHandler {
 	public boolean performResponse() throws Exception {
 		String messageType = this.responseHeader.getDeviceType();
 		if (messageType.equals("GET_CAPABIL")) {
-			//GetCapabilityMessage
+			// GetCapabilityMessage
 		} else if (messageType.equals("GET_IMAGE")) {
-			//GetImageMessage
+			// GetImageMessage
 		} else if (messageType.equals("GET_IMGMETA")) {
-			//GetImageMetaMessage
+			// GetImageMetaMessage
 		} else if (messageType.equals("GET_LBMETA")) {
-			//GetLabelMetaMessage
+			// GetLabelMetaMessage
 		} else if (messageType.equals("GET_STATUS")) {
-			//GetStatusMessage
+			// GetStatusMessage
 		} else if (messageType.equals("GET_TRAJ")) {
-			//GetTrajectoryMessage
+			// GetTrajectoryMessage
 		} else if (messageType.equals("CAPABILITY")) {
-			//CapabilityMessage
+			// CapabilityMessage
 		} else if (messageType.equals("COLORTABLE")) {
-			//ColorTableMessage
+			// ColorTableMessage
 		} else if (messageType.equals("IMAGE")) {
-			//ImageMessage
+			// ImageMessage
 		} else if (messageType.equals("IMGMETA")) {
-			//ImageMetaMessage
+			// ImageMetaMessage
 		} else if (messageType.equals("POINT")) {
-			//PointMessage
+			// PointMessage
 		} else if (messageType.equals("POSITION")) {
-			//PositionMessage
+			// PositionMessage
 		} else if (messageType.equals("STATUS")) {
-			//StatusMessage
+			// StatusMessage
 		} else if (messageType.equals("STP_TDATA")) {
-			//StopTrackingDataMessage
+			// StopTrackingDataMessage
 		} else if (messageType.equals("STT_TDATA")) {
-			//StopTrackingDataMessage
+			// StopTrackingDataMessage
 		} else if (messageType.equals("TDATA")) {
-			//TrackingDataMessage
+			// TrackingDataMessage
 		} else if (messageType.equals("TRAJ")) {
-			//TrajectoryMessage
+			// TrajectoryMessage
 		} else if (messageType.equals("TRANSFORM")) {
-			//TransformMessage
+			// TransformMessage
 		} else {
-			//UnknownMessage
+			// UnknownMessage
 		}
 		return false;
 	}
 
 	/**
-	 * Perform the responsejob
-         * performResponse methods must be adapted corresponding to the need of each use
+	 * Perform the responsejob performResponse methods must be adapted
+	 * corresponding to the need of each use
 	 * 
 	 * @param commands
 	 *            The commands to be performed
@@ -116,43 +125,43 @@ public class ResponseHandler {
 	public boolean performResponse(byte[] commands) throws Exception {
 		String messageType = this.responseHeader.getDeviceType();
 		if (messageType.equals("GET_CAPABIL")) {
-			//GetCapabilityMessage
+			// GetCapabilityMessage
 		} else if (messageType.equals("GET_IMAGE")) {
-			//GetImageMessage
+			// GetImageMessage
 		} else if (messageType.equals("GET_IMGMETA")) {
-			//GetImageMetaMessage
+			// GetImageMetaMessage
 		} else if (messageType.equals("GET_LBMETA")) {
-			//GetLabelMetaMessage
+			// GetLabelMetaMessage
 		} else if (messageType.equals("GET_STATUS")) {
-			//GetStatusMessage
+			// GetStatusMessage
 		} else if (messageType.equals("GET_TRAJ")) {
-			//GetTrajectoryMessage
+			// GetTrajectoryMessage
 		} else if (messageType.equals("CAPABILITY")) {
-			//CapabilityMessage
+			// CapabilityMessage
 		} else if (messageType.equals("COLORTABLE")) {
-			//ColorTableMessage
+			// ColorTableMessage
 		} else if (messageType.equals("IMAGE")) {
-			//ImageMessage
+			// ImageMessage
 		} else if (messageType.equals("IMGMETA")) {
-			//ImageMetaMessage
+			// ImageMetaMessage
 		} else if (messageType.equals("POINT")) {
-			//PointMessage
+			// PointMessage
 		} else if (messageType.equals("POSITION")) {
-			//PositionMessage
+			// PositionMessage
 		} else if (messageType.equals("STATUS")) {
-			//StatusMessage
+			// StatusMessage
 		} else if (messageType.equals("STP_TDATA")) {
-			//StopTrackingDataMessage
+			// StopTrackingDataMessage
 		} else if (messageType.equals("STT_TDATA")) {
-			//StopTrackingDataMessage
+			// StopTrackingDataMessage
 		} else if (messageType.equals("TDATA")) {
-			//TrackingDataMessage
+			// TrackingDataMessage
 		} else if (messageType.equals("TRAJ")) {
-			//TrajectoryMessage
+			// TrajectoryMessage
 		} else if (messageType.equals("TRANSFORM")) {
-			//TransformMessage
+			// TransformMessage
 		} else {
-			//UnknownMessage
+			// UnknownMessage
 		}
 		return false;
 	}

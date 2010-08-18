@@ -19,7 +19,10 @@ package org.medcare.igtl.util;
 import java.math.BigInteger;
 
 /**
- *** Utility to test util library/BytesArray crc64 and timestamp utilities and differents encoding/decoding
+ *** Utility to test util library/BytesArray crc64 and timestamp utilities and
+ * differents encoding/decoding
+ * 
+ * @author Andre Charles Legendre
  **/
 
 public class Tests {
@@ -39,19 +42,22 @@ public class Tests {
 		System.out
 				.println("Controle du Coefficient correspondant au polynome (should be 0xC96C5795D7870F42) : 0x"
 						+ Long.toHexString(bi.longValue()).toUpperCase());
-		System.out.println("Display the crc array calculated from Coefficient corresponding to ECMA-182 polynome");
+		System.out
+				.println("Display the crc array calculated from Coefficient corresponding to ECMA-182 polynome");
 		BytesArray tool = new BytesArray();
 		double nombre = 15678.345 / 10000.0;
 		System.out.println("Tests: double [15678.345/10000] " + nombre);
 		long entier = (long) nombre;
 		long reste = (long) ((nombre - entier) * 1000);
-		System.out.println("Tests: extract seconds and fraction from double [15678.345/10000] " + nombre + " seconds " + entier
-				+ " fraction " + reste);
+		System.out
+				.println("Tests: extract seconds and fraction from double [15678.345/10000] "
+						+ nombre + " seconds " + entier + " fraction " + reste);
 
 		System.out.println("Tests: encodeLong [1,224,false]");
 		byte[] bytes = tool.encodeLong(1, 224, false);
 		System.out.println("Tests: length [" + bytes.length + "]");
-		System.out.println("Tests: decodeLong [" + tool.decodeLong(bytes, 0, false) + "]");
+		System.out.println("Tests: decodeLong ["
+				+ tool.decodeLong(bytes, 0, false) + "]");
 		System.out.println("Tests: encodeLong [1,224,true]");
 		bytes = tool.encodeLong(1, 224, true);
 		bytes = new byte[] { (byte) 0x80 };

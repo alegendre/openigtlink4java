@@ -27,81 +27,86 @@ import org.medcare.igtl.util.Header;
 
 /**
  * <p>
- * The class can be used by first connecting to a server
- * sending requests comming from the requestQueue, listening for response
- * and adding response to the responsqueue
+ * The class can be used by first connecting to a server sending requests
+ * comming from the requestQueue, listening for response and adding response to
+ * the responsqueue
  * <p>
  * 
- * @author <a href="mailto:andleg@osfe.org">Andre Charles Legendre
- *         </a>
+ * @author <a href="mailto:andleg@osfe.org">Andre Charles Legendre </a>
  * @version 0.1a (09/06/2010)
  * 
  */
 
 public class OpenIGTClient extends Thread {
-    private SocketFactory socketFactory;
-    private java.net.Socket socket = null;
-    private OutputStream outstr;
-    private InputStream instr;
-    private ResponseQueueManager responseQueue = null;
-    private boolean alive;
-    private String host;
-    private int port;
+	private SocketFactory socketFactory;
+	private java.net.Socket socket = null;
+	private OutputStream outstr;
+	private InputStream instr;
+	private ResponseQueueManager responseQueue = null;
+	private boolean alive;
+	private String host;
+	private int port;
+
 	/***************************************************************************
 	 * Default OpenIGTClient constructor.
-	 * @param host to be connected
 	 * 
-	 * @param port of the host
+	 * @param host
+	 *            to be connected
+	 * 
+	 * @param port
+	 *            of the host
 	 * 
 	 **************************************************************************/
-    public OpenIGTClient(String host, int port) {
-	super("KnockKnockClient");
-	this.host = host;
-	this.port = port;
-    }
+	public OpenIGTClient(String host, int port) {
+		super("KnockKnockClient");
+		this.host = host;
+		this.port = port;
+	}
 
 	/***************************************************************************
-	 * Reader thread. Reads messages from the socket and add them to the ResponseQueueManager
+	 * Reader thread. Reads messages from the socket and add them to the
+	 * ResponseQueueManager
 	 * 
 	 **************************************************************************/
-    public void run() {
-       this.alive = true;
-    try {
-	setSocketFactory(SocketFactory.getDefault());
-	this.socket = socketFactory.createSocket(host, port);
-	this.responseQueue = new ResponseQueueManager();
-	outstr = socket.getOutputStream();
-	instr = socket.getInputStream();
-	int ret_read = 0;
-	byte[] headerBuff = new byte[58];
-	// System.out.println("JE LIS");
-	do {
-		ret_read = instr.read(headerBuff);
-		if (ret_read > 0) {
-			//System.out.print(new String(buff, 0, ret_read));
-			Header header = new Header(headerBuff);
-			byte[] bodyBuf = new byte[(int) header.getBody_size()];
-			ret_read = instr.read(bodyBuf);
-			if (ret_read > 0) {
-				responseQueue.addResponse(header, bodyBuf);
-			}
+	public void run() {
+		this.alive = true;
+		try {
+			setSocketFactory(SocketFactory.getDefault());
+			this.socket = socketFactory.createSocket(host, port);
+			this.responseQueue = new ResponseQueueManager();
+			outstr = socket.getOutputStream();
+			instr = socket.getInputStream();
+			int ret_read = 0;
+			byte[] headerBuff = new byte[Header.LENGTH];
+			// System.out.println("JE LIS");
+			do {
+				ret_read = instr.read(headerBuff);
+				if (ret_read > 0) {
+					// System.out.print(new String(buff, 0, ret_read));
+					Header header = new Header(headerBuff);
+					byte[] bodyBuf = new byte[(int) header.getBody_size()];
+					ret_read = instr.read(bodyBuf);
+					if (ret_read > 0) {
+						responseQueue.addResponse(header, bodyBuf);
+					}
+				}
+			} while (alive && ret_read >= 0);
+			outstr.close();
+			instr.close();
+			socket.close();
+		} catch (UnknownHostException e) {
+			System.err.println("Don't know about host" + host);
+		} catch (IOException e) {
+			System.err.println("Couldn't get I/O for the connection to: "
+					+ host);
+		} finally {
+			this.interrupt();
 		}
-	} while (alive && ret_read >= 0);
-        outstr.close();
-        instr.close();
-        socket.close();
-    } catch (UnknownHostException e) {
-            System.err.println("Don't know about host" + host);
-    } catch (IOException e) {
-            System.err.println("Couldn't get I/O for the connection to: " + host);
-    } finally {
-	    this.interrupt();
-    }
-  }
+	}
 
-     public void setSocketFactory(SocketFactory socketFactory) {  
-         this.socketFactory = socketFactory;
-      }  
+	public void setSocketFactory(SocketFactory socketFactory) {
+		this.socketFactory = socketFactory;
+	}
 
 	/***************************************************************************
 	 * Sends bytes
@@ -113,7 +118,8 @@ public class OpenIGTClient extends Thread {
 	 * @param bytes
 	 *            - byte[] array.
 	 **************************************************************************/
-	final public synchronized boolean sendBytes(byte[] bytes) throws IOException {
+	final public synchronized boolean sendBytes(byte[] bytes)
+			throws IOException {
 		try {
 			outstr.write(bytes);
 			outstr.flush();
@@ -124,6 +130,7 @@ public class OpenIGTClient extends Thread {
 		}
 		return true;
 	}
+
 	/***************************************************************************
 	 * Interrupt this thread
 	 **************************************************************************/

@@ -20,6 +20,8 @@ import java.nio.charset.Charset;
 
 /**
  *** For reading/writing binary fields
+ * 
+ * @author Andre Charles Legendre
  **/
 
 public class BytesArray {
@@ -172,8 +174,7 @@ public class BytesArray {
 	// ------------------------------------------------------------------------
 
 	/**
-	 *** Gets the current read/write index
-         * return@ The index
+	 *** Gets the current read/write index return@ The index
 	 **/
 	public int getIndex() {
 		return this.index;
@@ -276,8 +277,7 @@ public class BytesArray {
 	}
 
 	/**
-	 *** Read a <code>double</code> value from bytesArray, using
-	 * IEEE 754 format
+	 *** Read a <code>double</code> value from bytesArray, using IEEE 754 format
 	 *** 
 	 * @param length
 	 *            The number of bytes from which the value is decoded
@@ -434,7 +434,7 @@ public class BytesArray {
 	 **/
 	public long putCrc(byte[] buf, int len, long crc) {
 		crc = crc64(buf, len, crc);
-		putLong(crc, 8);
+		putULong(crc, 8);
 		return crc;
 	}
 
@@ -647,8 +647,9 @@ public class BytesArray {
 		bytesArray = newData;
 	}
 
-	 //Inspire from www.pps.jussieu.fr/~balat/Timestamp.java spec from rfc2030 but starting
-	 //date 00:00:00 January 1, 1970, UTC (instead of 1900)
+	// Inspire from www.pps.jussieu.fr/~balat/Timestamp.java spec from rfc2030
+	// but starting
+	// date 00:00:00 January 1, 1970, UTC (instead of 1900)
 	/**
 	 * Encodes a time in millisec in a 8 bytes array
 	 *** 
@@ -672,8 +673,9 @@ public class BytesArray {
 		return array;
 	}
 
-	 // Inspire from www.pps.jussieu.fr/~balat/Timestamp.java spec from rfc2030 but starting
-	 // date 00:00:00 January 1, 1970, UTC (instead of 1900)
+	// Inspire from www.pps.jussieu.fr/~balat/Timestamp.java spec from rfc2030
+	// but starting
+	// date 00:00:00 January 1, 1970, UTC (instead of 1900)
 	/**
 	 * Encodes a time in millisec in a 8 bytes array
 	 *** 
@@ -848,7 +850,8 @@ public class BytesArray {
 	 *** 
 	 *** @param crc
 	 *            actual crc value <code>n</code>
-	 *** @param ch The next byte
+	 *** @param ch
+	 *            The next byte
 	 *** @return The long crc64 value
 	 **/
 	public long next_crc(long crc, byte ch) {

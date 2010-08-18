@@ -24,62 +24,68 @@ import org.medcare.igtl.util.Header;
 
 /**
  * OpenIGTServer create one ServerThread for each client making a connection.
- * ServerThread will add messages received from client to the messageQueue to be treated then
- * MessageQueueManager will use its ServerThread to send answer to messages.
+ * ServerThread will add messages received from client to the messageQueue to be
+ * treated then MessageQueueManager will use its ServerThread to send answer to
+ * messages.
+ * 
+ * @author Andre Charles Legendre
  */
 public class ServerThread extends Thread {
-    private java.net.Socket socket = null;
-    private OutputStream outstr;
-    private InputStream instr;
-    private MessageQueueManager messageQueue = null;
-    private boolean alive;
+	private java.net.Socket socket = null;
+	private OutputStream outstr;
+	private InputStream instr;
+	private MessageQueueManager messageQueue = null;
+	private boolean alive;
 
 	/***************************************************************************
 	 * Default ServerThread constructor.
-	 * @param socket to listen to
+	 * 
+	 * @param socket
+	 *            to listen to
 	 * 
 	 **************************************************************************/
-    public ServerThread(java.net.Socket socket) {
-	super("ServerThread");
-	this.socket = socket;
-	this.messageQueue = new MessageQueueManager(this);
-        this.messageQueue.start();
-    }
+	public ServerThread(java.net.Socket socket) {
+		super("ServerThread");
+		this.socket = socket;
+		this.messageQueue = new MessageQueueManager(this);
+		this.messageQueue.start();
+	}
 
 	/***************************************************************************
-	 * Reader thread. Reads messages from the socket and add them to the MessageQueueManager
+	 * Reader thread. Reads messages from the socket and add them to the
+	 * MessageQueueManager
 	 * 
 	 **************************************************************************/
-    public void run() {
-       this.alive = true;
+	public void run() {
+		this.alive = true;
 
-	try {
-	    outstr = socket.getOutputStream();
-	    instr = socket.getInputStream();
-	    int ret_read = 0;
-	    byte[] headerBuff = new byte[58];
-	// System.out.println("JE LIS");
-	do {
-		ret_read = instr.read(headerBuff);
-		if (ret_read > 0) {
-			//System.out.print(new String(buff, 0, ret_read));
-			Header header = new Header(headerBuff);
-			byte[] bodyBuf = new byte[(int) header.getBody_size()];
-			ret_read = instr.read(bodyBuf);
-			if (ret_read > 0) {
-				messageQueue.addMessage(header, bodyBuf);
-			}
+		try {
+			outstr = socket.getOutputStream();
+			instr = socket.getInputStream();
+			int ret_read = 0;
+			byte[] headerBuff = new byte[Header.LENGTH];
+			// System.out.println("JE LIS");
+			do {
+				ret_read = instr.read(headerBuff);
+				if (ret_read > 0) {
+					// System.out.print(new String(buff, 0, ret_read));
+					Header header = new Header(headerBuff);
+					byte[] bodyBuf = new byte[(int) header.getBody_size()];
+					ret_read = instr.read(bodyBuf);
+					if (ret_read > 0) {
+						messageQueue.addMessage(header, bodyBuf);
+					}
+				}
+			} while (alive && ret_read >= 0);
+			// System.out.println("J'AI LU");
+			outstr.close();
+			instr.close();
+			socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-	} while (alive && ret_read >= 0);
-	// System.out.println("J'AI LU");
-	    outstr.close();
-	    instr.close();
-	    socket.close();
-	} catch (IOException e) {
-	    e.printStackTrace();
+		this.interrupt();
 	}
-	this.interrupt();
-    }
 
 	/***************************************************************************
 	 * Sends bytes
@@ -100,6 +106,7 @@ public class ServerThread extends Thread {
 					+ e.getMessage());
 		}
 	}
+
 	/***************************************************************************
 	 * Interrupt this thread
 	 **************************************************************************/

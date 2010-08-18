@@ -23,12 +23,11 @@ import javax.net.ServerSocketFactory;
 
 /**
  * <p>
- * The class can be used to create a server listening a port
- * Messages received will be queued and proceed
+ * The class can be used to create a server listening a port Messages received
+ * will be queued and proceed
  * <p>
  * 
- * @author <a href="mailto:andleg@osfe.org">Andre Charles Legendre
- *         </a>
+ * @author <a href="mailto:andleg@osfe.org">Andre Charles Legendre </a>
  * @version 0.1a (09/06/2010)
  * 
  */
@@ -36,24 +35,27 @@ import javax.net.ServerSocketFactory;
 public class OpenIGTServer {
 	/***************************************************************************
 	 * Default MessageQueueManager constructor.
-	 * @param port port on which this server will be bind
+	 * 
+	 * @param port
+	 *            port on which this server will be bind
 	 * 
 	 **************************************************************************/
-    public OpenIGTServer(int port) throws IOException {
-        ServerSocket socket = null;
-        boolean listening = true;
-        ServerSocketFactory serverSocketFactory = ServerSocketFactory.getDefault();
+	public OpenIGTServer(int port) throws IOException {
+		ServerSocket socket = null;
+		boolean listening = true;
+		ServerSocketFactory serverSocketFactory = ServerSocketFactory
+				.getDefault();
 
-        try {
-            socket = serverSocketFactory.createServerSocket(port);
-        } catch (IOException e) {
-            System.err.println("Could not listen on port: " + port);
-            System.exit(-1);
-        }
+		try {
+			socket = serverSocketFactory.createServerSocket(port);
+		} catch (IOException e) {
+			System.err.println("Could not listen on port: " + port);
+			System.exit(-1);
+		}
 
-        while (listening)
-	    new ServerThread(socket.accept()).start();
+		while (listening)
+			new ServerThread(socket.accept()).start();
 
-        socket.close();
-    }
+		socket.close();
+	}
 }

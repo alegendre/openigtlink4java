@@ -18,9 +18,12 @@ package org.medcare.igtl.util;
 
 /**
  *** For reading/writing OpenIGTLink headers
+ * 
+ * @author Andre Charles Legendre
  **/
 
 public class Header {
+	public static int LENGTH = 58;
 	int base = 1000000000; /* 10^9 */
 	long version; // unsigned int 16bits
 	String deviceType; // char 12 bits
@@ -92,10 +95,11 @@ public class Header {
 	 * @param body
 	 *            ; // body in bytes
 	 **/
-	public Header(long version, String deviceType, String deviceName, byte body[]) {
+	public Header(long version, String deviceType, String deviceName,
+			byte body[]) {
 		bytesArray = new BytesArray();
 		this.version = version;
-		bytesArray.putLong(version, 2);
+		bytesArray.putULong(version, 2);
 		byte typeArray[] = new byte[12];
 		for (int m = 0; m < 12; m++) {
 			typeArray[m] = 0;
@@ -115,9 +119,10 @@ public class Header {
 		bytesArray.putString(new String(nameArray));
 		this.timestamp = bytesArray.putTimeStamp();
 		this.body_size = body.length;
-		bytesArray.putLong(body_size, 8);
+		bytesArray.putULong(body_size, 8);
 		this.crc = bytesArray.putCrc(body, body.length, 0L);
 	}
+
 	// ------------------------------------------------------------------------
 
 	/**

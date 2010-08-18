@@ -1,19 +1,38 @@
+/*=========================================================================
+
+  Program:   OpenIGTLink Library
+  Module:    $HeadURL: http://osfe.org/OpenIGTLink/Source/org/medcare/igtl/messages/OpenIGTMessage.java $
+  Language:  java
+  Date:      $Date: 2010-18-14 10:37:44 +0200 (ven., 13 nov. 2009) $
+  Version:   $Revision: 0ab$
+
+  Copyright (c) Absynt Technologies Ltd. All rights reserved.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.  See the above copyright notices for more information.
+
+=========================================================================*/
+
 package org.medcare.igtl.messages;
 
 import org.medcare.igtl.util.Header;
 
 /**
  *** All messages will have to extend this class
+ * 
+ * @author Andre Charles Legendre
+ * 
  **/
 
 public class OpenIGTMessage {
 	// ------------------------------------------------------------------------
 
-	private String deviceType;
-	private String deviceName;
-	private byte[] body;
-	private Header header;
-	private static long VERSION_2 = 2L;
+	public String deviceType;
+	public String deviceName;
+	public byte[] body;
+	public Header header;
+	public static long VERSION_2 = 2L;
 
 	/**
 	 *** Constructor to be used to create message to getBytes to send them
@@ -22,14 +41,10 @@ public class OpenIGTMessage {
 	 *            Device Type
 	 * @param deviceName
 	 *            Device Name
-	 * @param body
-	 *            bytes array containing message body
 	 **/
-	public OpenIGTMessage(String deviceType, String deviceName, byte[] body) {
+	public OpenIGTMessage(String deviceType, String deviceName) {
 		this.deviceType = deviceType;
 		this.deviceName = deviceName;
-		this.body = body;
-		this.header = new Header(VERSION_2, deviceType, deviceName, body);
 	}
 
 	/**
@@ -90,9 +105,9 @@ public class OpenIGTMessage {
 	 **/
 	public byte[] getBytes() {
 		byte[] header_Bytes = header.getBytes();
-		byte[] bytes = new byte[body.length + 58];
-		System.arraycopy(header_Bytes, 0, bytes, 0, 58);
-		System.arraycopy(body, 0, bytes, 59, body.length);
+		byte[] bytes = new byte[body.length + Header.LENGTH];
+		System.arraycopy(header_Bytes, 0, bytes, 0, Header.LENGTH);
+		System.arraycopy(body, 0, bytes, Header.LENGTH, body.length);
 		return bytes;
 	}
 }
