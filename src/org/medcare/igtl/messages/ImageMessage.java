@@ -50,9 +50,9 @@ public class ImageMessage extends OpenIGTMessage {
 	public static final int TYPE_FLOAT64 = 11;
 
 	long version; // V unsigned int 16bits version
-	long data_type = DTYPE_SCALAR; // T unsingned int 8bits image_type data_type
-	// dataType
-	long scalar_type = TYPE_UINT8; // S unsingned int 8bits scalar_type
+	long imageType = DTYPE_SCALAR; // T unsingned int 8bits image_type image_type
+	// image_ype
+	long scalarType = TYPE_UINT8; // S unsingned int 8bits scalarType
 	// scalarType
 	long endian = ENDIAN_BIG; // E unsingned int 8bits endian_type endian endian
 	long coordinate_type = COORDINATE_RAS; // O unsingned int 8bits
@@ -90,7 +90,6 @@ public class ImageMessage extends OpenIGTMessage {
 	// spacing, igtl_image_get_matrix() calculates spacing based on the
 	// transformation matrix
 	double spacing[] = new double[3]; // float 32bits
-	private int scalarType;
 	private byte[] image_data;
 	private BytesArray bytesArray;
 	private byte[] image_header;
@@ -100,13 +99,11 @@ public class ImageMessage extends OpenIGTMessage {
 	 * constructor you must use method SetImageHeader, then CreateBody and then
 	 * getBytes to send them
 	 *** 
-	 * @param deviceType
-	 *            Device Type
 	 * @param deviceName
 	 *            Device Name
 	 **/
-	public ImageMessage(String deviceType, String deviceName) {
-		super(deviceType, deviceName);
+	public ImageMessage(String deviceName) {
+		super(deviceName);
 	}
 
 	/**
@@ -127,21 +124,23 @@ public class ImageMessage extends OpenIGTMessage {
 	 * 
 	 * @param image_header byte arrary containing image header
 	 * @param imageData byte arrary containing image data
+	 *** 
+	 * @return the bytes array containing the body
 	 */
 	public byte[] CreateBody(byte image_header[], byte imageData[]) {
 		body = new byte[Header.LENGTH + image_header.length + imageData.length];
 		System.arraycopy(image_header, 0, body, 0, image_header.length);
 		System.arraycopy(imageData, 0, body, image_header.length,
 				imageData.length);
-		header = new Header(VERSION_2, deviceType, deviceName, body);
+		header = new Header(VERSION_2, "IMAGE", deviceName, body);
 		return body;
 	}
 
 	/**
 	 *** To create image_header from image carateristics and to get the byte array to send
 	 * @param version
-	 * @param data_type
-	 * @param scalar_type
+	 * @param imageType
+	 * @param scalarType
 	 * @param endian
 	 * @param coordinate_type
 	 * @param dimensions
@@ -152,17 +151,17 @@ public class ImageMessage extends OpenIGTMessage {
 	 *** 
 	 * @return the bytes array created from the value
 	 */
-	public byte[] SetImageHeader(long version, long data_type,
-			long scalar_type, long endian, long coordinate_type,
+	public byte[] SetImageHeader(long version, long imageType,
+			long scalarType, long endian, long coordinate_type,
 			long dimensions[], double origin[], double normals[][],
 			long subOffset[], long subDimensions[]) {
 		bytesArray = new BytesArray();
 		this.version = version;
 		bytesArray.putULong(version, 2);
-		this.data_type = data_type;
-		bytesArray.putULong(data_type, 1);
-		this.scalar_type = scalar_type;
-		bytesArray.putULong(scalar_type, 1);
+		this.imageType = imageType;
+		bytesArray.putULong(imageType, 1);
+		this.scalarType = scalarType;
+		bytesArray.putULong(scalarType, 1);
 		this.endian = endian;
 		bytesArray.putULong(endian, 1);
 		this.coordinate_type = coordinate_type;
@@ -206,7 +205,7 @@ public class ImageMessage extends OpenIGTMessage {
 	 */
 	public byte[] SetImageHeader(long dimensions[], double origin[],
 			double normals[][], long subOffset[], long subDimensions[]) {
-		return SetImageHeader(this.version, this.data_type, this.scalar_type,
+		return SetImageHeader(this.version, this.imageType, this.scalarType,
 				this.endian, this.coordinate_type, dimensions, origin, normals,
 				subOffset, subDimensions);
 	}
@@ -220,8 +219,8 @@ public class ImageMessage extends OpenIGTMessage {
 		bytesArray = new BytesArray();
 		bytesArray.putBytes(image_header);
 		version = bytesArray.getLong(2); // unsigned Short
-		data_type = bytesArray.getLong(1); // unsigned int8
-		scalar_type = bytesArray.getLong(1); // unsigned int8
+		imageType = bytesArray.getLong(1); // unsigned int8
+		scalarType = bytesArray.getLong(1); // unsigned int8
 		endian = bytesArray.getLong(1); // unsigned int8
 		coordinate_type = bytesArray.getLong(1); // unsigned int8
 		dimensions[0] = bytesArray.getLong(2); // unsigned int16
@@ -560,7 +559,7 @@ public class ImageMessage extends OpenIGTMessage {
 	 * @param scalarType
 	 *** 
 	 */
-	public void SetScalarType(int scalarType) {
+	public void SetScalarType(long scalarType) {
 		this.scalarType = scalarType;
 	}
 
@@ -617,8 +616,26 @@ public class ImageMessage extends OpenIGTMessage {
 	 *** 
 	 * @return the scalar type
 	 */
-	public int GetScalarType() {
+	public long GetScalarType() {
 		return scalarType;
+	}
+
+	/**
+	 *** To set Image image type
+	 * @param imageType
+	 *** 
+	 */
+	public void SetImageType(long imageType) {
+		this.imageType = imageType;
+	}
+
+	/**
+	 *** To get Image image type
+	 *** 
+	 * @return the image type
+	 */
+	public long GetImageType() {
+		return imageType;
 	}
 
 	/**
@@ -664,7 +681,7 @@ public class ImageMessage extends OpenIGTMessage {
 	 * @return the scalar size
 	 */
 	private long GetScalarSize() {
-		switch (scalarType) {
+		switch ((int)scalarType) {
 		case TYPE_INT8:
 			return 1;
 		case TYPE_UINT8:

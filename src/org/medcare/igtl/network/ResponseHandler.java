@@ -70,7 +70,7 @@ public class ResponseHandler {
 	 * @throws Exception
 	 */
 	public boolean performResponse() throws Exception {
-		String messageType = this.responseHeader.getDeviceType();
+		String messageType = this.responseHeader.getDataType();
 		if (messageType.equals("GET_CAPABIL")) {
 			// GetCapabilityMessage
 		} else if (messageType.equals("GET_IMAGE")) {
@@ -123,7 +123,7 @@ public class ResponseHandler {
 	 * @throws Exception
 	 */
 	public boolean performResponse(byte[] commands) throws Exception {
-		String messageType = this.responseHeader.getDeviceType();
+		String messageType = this.responseHeader.getDataType();
 		if (messageType.equals("GET_CAPABIL")) {
 			// GetCapabilityMessage
 		} else if (messageType.equals("GET_IMAGE")) {

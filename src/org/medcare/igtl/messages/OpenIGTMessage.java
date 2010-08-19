@@ -28,7 +28,6 @@ import org.medcare.igtl.util.Header;
 public class OpenIGTMessage {
 	// ------------------------------------------------------------------------
 
-	public String deviceType;
 	public String deviceName;
 	public byte[] body;
 	public Header header;
@@ -37,13 +36,10 @@ public class OpenIGTMessage {
 	/**
 	 *** Constructor to be used to create message to getBytes to send them
 	 *** 
-	 * @param deviceType
-	 *            Device Type
 	 * @param deviceName
 	 *            Device Name
 	 **/
-	public OpenIGTMessage(String deviceType, String deviceName) {
-		this.deviceType = deviceType;
+	public OpenIGTMessage(String deviceName) {
 		this.deviceName = deviceName;
 	}
 
@@ -57,7 +53,6 @@ public class OpenIGTMessage {
 	 **/
 	public OpenIGTMessage(Header header, byte[] body) {
 		this.header = header;
-		this.deviceType = header.getDeviceType();
 		this.deviceName = header.getDeviceName();
 		this.body = body;
 	}
@@ -69,15 +64,6 @@ public class OpenIGTMessage {
 	 **/
 	public String getDeviceName() {
 		return this.deviceName;
-	}
-
-	/**
-	 *** Device type.
-	 *** 
-	 * @return The type of the device
-	 **/
-	public String getDeviceType() {
-		return this.deviceType;
 	}
 
 	/**

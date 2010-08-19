@@ -26,7 +26,7 @@ public class Header {
 	public static int LENGTH = 58;
 	int base = 1000000000; /* 10^9 */
 	long version; // unsigned int 16bits
-	String deviceType; // char 12 bits
+	String dataType; // char 12 bits
 	String deviceName; // char 20 bits
 	long timestamp; // unsigned int 64 bits
 	long body_size; // unsigned int 64 bits
@@ -60,7 +60,7 @@ public class Header {
 		for (int m = 0; m < 12; m++) {
 			typeArray[m] = 0;
 		}
-		deviceType = new String(typeArray, bytesArray.charset);
+		dataType = new String(typeArray, bytesArray.charset);
 		int len = _type.length();
 		len = (len <= 12) ? len : 12;
 		System.arraycopy(typeArray, 0, _type.toCharArray(), 0, len);
@@ -88,14 +88,14 @@ public class Header {
 	 *** 
 	 * @param version
 	 *            ; // Version number unsigned int 16bits
-	 * @param deviceType
+	 * @param dataType
 	 *            ; // Type name of data char 12 bits
 	 * @param deviceName
 	 *            ; // Unique device name char 20 bits
 	 * @param body
 	 *            ; // body in bytes
 	 **/
-	public Header(long version, String deviceType, String deviceName,
+	public Header(long version, String dataType, String deviceName,
 			byte body[]) {
 		bytesArray = new BytesArray();
 		this.version = version;
@@ -104,10 +104,10 @@ public class Header {
 		for (int m = 0; m < 12; m++) {
 			typeArray[m] = 0;
 		}
-		deviceType = new String(typeArray, bytesArray.charset);
-		int len = deviceType.length();
+		dataType = new String(typeArray, bytesArray.charset);
+		int len = dataType.length();
 		len = (len <= 12) ? len : 12;
-		System.arraycopy(typeArray, 0, deviceType.toCharArray(), 0, len);
+		System.arraycopy(typeArray, 0, dataType.toCharArray(), 0, len);
 		bytesArray.putString(new String(typeArray));
 		byte nameArray[] = new byte[20];
 		for (int m = 0; m < 20; m++) {
@@ -135,7 +135,7 @@ public class Header {
 		bytesArray = new BytesArray();
 		bytesArray.putBytes(bytes);
 		version = bytesArray.getLong(2); // unsigned int 16bits
-		deviceType = bytesArray.getString(12); // char 12 bits
+		dataType = bytesArray.getString(12); // char 12 bits
 		deviceName = bytesArray.getString(20); // char 20 bits
 		timestamp = bytesArray.decodeTimeStamp(bytesArray.getBytes(8));
 		body_size = bytesArray.getLong(8); // unsigned int 64 bits
@@ -160,8 +160,8 @@ public class Header {
 	 *** 
 	 * @return The type of the device
 	 **/
-	public String getDeviceType() {
-		return this.deviceType;
+	public String getDataType() {
+		return this.dataType;
 	}
 
 	// ------------------------------------------------------------------------
