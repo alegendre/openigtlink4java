@@ -20,7 +20,7 @@ import org.medcare.igtl.util.BytesArray;
 import org.medcare.igtl.util.Header;
 
 /**
- *** This class create an Image objet from bytes received or help to generate
+ *** This class create an Transform objet from bytes received or help to generate
  * bytes to send from it
  * 
  * @author Andre Charles Legendre
@@ -86,7 +86,7 @@ public class TransformMessage extends OpenIGTMessage {
 	public byte[] CreateBody(byte transform_data[]) {
 		body = new byte[Header.LENGTH + transform_data.length];
 		System.arraycopy(transform_data, 0, body, 0, transform_data.length);
-		header = new Header(VERSION_2, "IMAGE", deviceName, body);
+		header = new Header(VERSION_2, "TRANSFORM", deviceName, body);
 		return body;
 	}
 
