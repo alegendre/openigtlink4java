@@ -120,10 +120,6 @@ public class ImageMessage extends OpenIGTMessage {
 		image_header = new byte[Header.LENGTH];
 		System.arraycopy(body, 0, image_header, 0, Header.LENGTH);
 		SetImageHeader(image_header);
-		matrix[3][0] = 0.0;
-		matrix[3][1] = 0.0;
-		matrix[3][2] = 0.0;
-		matrix[3][3] = 1.0;
 	}
 
 	/**
@@ -142,6 +138,7 @@ public class ImageMessage extends OpenIGTMessage {
 	}
 
 	/**
+	 *** To create image_header from image carateristics and to get the byte array to send
 	 * @param version
 	 * @param data_type
 	 * @param scalar_type
@@ -152,6 +149,8 @@ public class ImageMessage extends OpenIGTMessage {
 	 * @param normals
 	 * @param subOffset
 	 * @param subDimensions
+	 *** 
+	 * @return the bytes array created from the value
 	 */
 	public byte[] SetImageHeader(long version, long data_type,
 			long scalar_type, long endian, long coordinate_type,
@@ -173,34 +172,37 @@ public class ImageMessage extends OpenIGTMessage {
 		bytesArray.putULong(dimensions[1], 2);
 		bytesArray.putULong(dimensions[2], 2);
 		SetOrigin(origin);
-		bytesArray.putDouble(matrix[0][3], 4);
-		bytesArray.putDouble(matrix[1][3], 4);
-		bytesArray.putDouble(matrix[2][3], 4);
+		bytesArray.putDouble(origin[0], 4);
+		bytesArray.putDouble(origin[1], 4);
+		bytesArray.putDouble(origin[2], 4);
 		SetNormals(normals);
 		for (int i = 0; i < 3; i++)
 			for (int j = 0; j < 3; j++)
-				bytesArray.putDouble(matrix[i][j], 4);
-		SetSubVolume(subDimensions, subOffset);
-		matrix[3][0] = 0.0;
-		matrix[3][1] = 0.0;
-		matrix[3][2] = 0.0;
-		matrix[3][3] = 1.0;
-		bytesArray.putULong(subOffset[0], 2);
-		bytesArray.putULong(subOffset[1], 2);
-		bytesArray.putULong(subOffset[2], 2);
-		bytesArray.putULong(subDimensions[0], 2);
-		bytesArray.putULong(subDimensions[1], 2);
-		bytesArray.putULong(subDimensions[2], 2);
-		image_header = bytesArray.getBytes();
+				bytesArray.putDouble(normals[i][j], 4);
+		SetMatrix(origin, normals);
+		if (SetSubVolume(subDimensions, subOffset)) {
+			bytesArray.putULong(subOffset[0], 2);
+			bytesArray.putULong(subOffset[1], 2);
+			bytesArray.putULong(subOffset[2], 2);
+			bytesArray.putULong(subDimensions[0], 2);
+			bytesArray.putULong(subDimensions[1], 2);
+			bytesArray.putULong(subDimensions[2], 2);
+			image_header = bytesArray.getBytes();
+		} else {
+			image_header = new byte[0];
+		}
 		return image_header;
 	}
 
 	/**
+	 *** To create image_header from image carateristics and to get the byte array to send
 	 * @param dimensions
 	 * @param origin
 	 * @param normals
 	 * @param subOffset
 	 * @param subDimensions
+	 *** 
+	 * @return the bytes array created from the value
 	 */
 	public byte[] SetImageHeader(long dimensions[], double origin[],
 			double normals[][], long subOffset[], long subDimensions[]) {
@@ -210,6 +212,7 @@ public class ImageMessage extends OpenIGTMessage {
 	}
 
 	/**
+	 *** To extract image caracteristics from image_header byte array
 	 * @param image_header
 	 */
 	public void SetImageHeader(byte image_header[]) {
@@ -233,52 +236,98 @@ public class ImageMessage extends OpenIGTMessage {
 			for (int j = 0; j < 3; j++)
 				normals[i][j] = bytesArray.getDouble(4); // float32
 		SetNormals(normals);
+		SetMatrix(origin, normals);
 		subOffset[0] = bytesArray.getLong(2); // unsigned int16
 		subOffset[1] = bytesArray.getLong(2); // unsigned int16
 		subOffset[2] = bytesArray.getLong(2); // unsigned int16
 		subDimensions[0] = bytesArray.getLong(2); // unsigned int16
 		subDimensions[1] = bytesArray.getLong(2); // unsigned int16
 		subDimensions[2] = bytesArray.getLong(2); // unsigned int16
+		//We don't test the result, subvolume is supposed to have been tested during the byte array creation
 		SetSubVolume(subDimensions, subOffset);
 	}
 
+	/**
+	 *** To get image_header byte array
+	 *** 
+	 * @return the image_header bytes array
+	 */
 	public byte[] GetImageHeader() {
-		return image_header;
+		return this.image_header;
 	}
 
+	/**
+	 *** To get image_data byte array
+	 *** 
+	 * @return the image_data bytes array
+	 */
 	public byte[] GetImageData() {
-		return image_data;
+		return this.image_data;
 	}
 
-	// Image dimensions
-	public void SetDimensions(long s[]) {
-		dimensions = s;
+	/**
+	 *** To set Image dimensions
+	 * @param dimensions
+	 *** 
+	 */
+	public void SetDimensions(long dimensions[]) {
+		this.dimensions = dimensions;
 	}
 
+	/**
+	 *** To set Image dimensions
+	 * @param i
+	 * @param j
+	 * @param k
+	 *** 
+	 */
 	public void SetDimensions(long i, long j, long k) {
-		dimensions[0] = i;
-		dimensions[1] = j;
-		dimensions[2] = k;
+		this.dimensions[0] = i;
+		this.dimensions[1] = j;
+		this.dimensions[2] = k;
 	}
 
+	/**
+	 *** To get Image dimensions
+	 *** 
+	 * @return the dimensions bytes array
+	 */
 	public long[] GetDimensions() {
-		return dimensions;
+		return this.dimensions;
 	}
 
-	public int SetSubVolume(long dim[], long off[]) {
+	/**
+	 *** To set Image dimensions
+	 * @param subDimensions
+	 * @param subOffset
+	 *** 
+	 * @return true if Ok false if not
+	 */
+	public boolean SetSubVolume(long subDimensions[], long subOffset[]) {
 		// make sure that sub-volume fits in the dimensions
-		if (off[0] + dim[0] <= dimensions[0]
-				&& off[1] + dim[1] <= dimensions[1]
-				&& off[2] + dim[2] <= dimensions[2]) {
-			subDimensions = dim;
-			subOffset = off;
-			return 1;
+		if (subOffset[0] + subDimensions[0] <= dimensions[0]
+				&& subOffset[1] + subDimensions[1] <= dimensions[1]
+				&& subOffset[2] + subDimensions[2] <= dimensions[2]) {
+			this.subDimensions = subDimensions;
+			this.subOffset = subOffset;
+			return true;
 		} else {
-			return 0;
+			return false;
 		}
 	}
 
-	public int SetSubVolume(int dimi, int dimj, int dimk, int offi, int offj,
+	/**
+	 *** To set Image dimensions
+	 * @param dimi
+	 * @param dimj
+	 * @param dimk
+	 * @param offi
+	 * @param offj
+	 * @param offk
+	 *** 
+	 * @return true if Ok false if not
+	 */
+	public boolean SetSubVolume(int dimi, int dimj, int dimk, int offi, int offj,
 			int offk) {
 		// make sure that sub-volume fits in the dimensions
 		if (offi + dimi <= dimensions[0] && offj + dimj <= dimensions[1]
@@ -289,159 +338,331 @@ public class ImageMessage extends OpenIGTMessage {
 			subOffset[0] = offi;
 			subOffset[1] = offj;
 			subOffset[2] = offk;
-			return 1;
+			return true;
 		} else {
-			return 0;
+			return false;
 		}
 	}
 
+	/**
+	 *** To get SubVolume dimensions
+	 *** 
+	 * @return the SubVolume dimensions bytes array
+	 */
 	public long[] GetSubDimensions() {
 		return subDimensions;
 	}
 
+	/**
+	 *** To get SubVolume offset
+	 *** 
+	 * @return the SubVolume offset bytes array
+	 */
 	public long[] GetSubOffset() {
 		return subOffset;
 	}
 
-	public void SetSpacing(double s[]) {
-		spacing = s;
+	/**
+	 *** To set Image spacing
+	 * @param spacing
+	 *** 
+	 */
+	public void SetSpacing(double spacing[]) {
+		this.spacing = spacing;
 	}
 
+	/**
+	 *** To set Image spacing
+	 * @param si
+	 * @param sj
+	 * @param sk
+	 *** 
+	 */
 	public void SetSpacing(float si, float sj, float sk) {
 		spacing[0] = si;
 		spacing[1] = sj;
 		spacing[2] = sk;
 	}
 
+	/**
+	 *** To get Image spacing
+	 *** 
+	 * @return the spacing bytes array
+	 */
 	public double[] GetSpacing() {
 		return spacing;
 	}
 
-	public void SetOrigin(double p[]) {
-		matrix[0][3] = p[0];
-		matrix[1][3] = p[1];
-		matrix[2][3] = p[2];
-
-		matrix[3][0] = 0.0;
-		matrix[3][1] = 0.0;
-		matrix[3][2] = 0.0;
-		matrix[3][3] = 1.0;
+	/**
+	 *** To set Image origin
+	 * @param origin
+	 *** 
+	 */
+	public void SetOrigin(double origin[]) {
+		this.origin = origin;
 	}
 
+	/**
+	 *** To set Image origin
+	 * @param px
+	 * @param py
+	 * @param pz
+	 *** 
+	 */
 	public void SetOrigin(double px, double py, double pz) {
-		matrix[0][3] = px;
-		matrix[1][3] = py;
-		matrix[2][3] = pz;
-
-		matrix[3][0] = 0.0;
-		matrix[3][1] = 0.0;
-		matrix[3][2] = 0.0;
-		matrix[3][3] = 1.0;
+		this.origin[0] = px;
+		this.origin[1] = py;
+		this.origin[2] = pz;
 	}
 
+	/**
+	 *** To get Image origin
+	 *** 
+	 * @return the origin bytes array
+	 */
 	public double[] GetOrigin() {
-		origin[0] = matrix[0][3];
-		origin[1] = matrix[1][3];
-		origin[2] = matrix[2][3];
-		return origin;
+		return this.origin;
 	}
 
-	void SetNormals(double o[][]) {
-		matrix[0][0] = o[0][0];
-		matrix[0][1] = o[0][1];
-		matrix[0][2] = o[0][2];
-		matrix[1][0] = o[1][0];
-		matrix[1][1] = o[1][1];
-		matrix[1][2] = o[1][2];
-		matrix[2][0] = o[2][0];
-		matrix[2][1] = o[2][1];
-		matrix[2][2] = o[2][2];
+	/**
+	 *** To set Image normals
+	 * @param normals
+	 *** 
+	 */
+	void SetNormals(double normals[][]) {
+		this.normals = normals;
 	}
 
+	/**
+	 *** To set Image normals
+	 * @param t array
+	 * @param s array
+	 * @param n array
+	 *** 
+	 */
 	void SetNormals(double t[], double s[], double n[]) {
-		matrix[0][0] = t[0];
-		matrix[1][0] = t[1];
-		matrix[2][0] = t[2];
-		matrix[0][1] = s[0];
-		matrix[1][1] = s[1];
-		matrix[2][1] = s[2];
-		matrix[0][2] = n[0];
-		matrix[1][2] = n[1];
-		matrix[2][2] = n[2];
+		normals[0][0] = t[0];
+		normals[1][0] = t[1];
+		normals[2][0] = t[2];
+		normals[0][1] = s[0];
+		normals[1][1] = s[1];
+		normals[2][1] = s[2];
+		normals[0][2] = n[0];
+		normals[1][2] = n[1];
+		normals[2][2] = n[2];
 	}
 
+	/**
+	 *** To get Image normals
+	 *** 
+	 * @return the normals matrix
+	 */
 	public double[][] GetNormals() {
-		normals[0][0] = matrix[0][0];
-		normals[0][1] = matrix[0][1];
-		normals[0][2] = matrix[0][2];
-		normals[1][0] = matrix[1][0];
-		normals[1][1] = matrix[1][1];
-		normals[1][2] = matrix[1][2];
-		normals[2][0] = matrix[2][0];
-		normals[2][1] = matrix[2][1];
-		normals[2][2] = matrix[2][2];
 		return normals;
 	}
 
-	public void SetMatrix(double matrix[][]) {
-		this.matrix = matrix;
+	/**
+	 *** To set Image matrix
+	 * @param spacing array
+	 * @param origin array
+	 * @param norm_i array
+	 * @param norm_j array
+	 * @param norm_k array
+	 *** 
+	 */
+	public void SetMatrix(double spacing[], double origin[],
+                            double norm_i[], double norm_j[], double norm_k[]) {
+		matrix[0][0] = norm_i[0] * spacing[0];
+		matrix[1][0] = norm_i[1] * spacing[0];
+		matrix[2][0] = norm_i[2] * spacing[0];
+		matrix[0][1] = norm_j[0] * spacing[1];
+		matrix[1][1] = norm_j[1] * spacing[1];
+		matrix[2][1] = norm_j[2] * spacing[1];
+		matrix[0][2] = norm_k[0] * spacing[2];
+		matrix[1][2] = norm_k[1] * spacing[2];
+		matrix[2][2] = norm_k[2] * spacing[2];
+		matrix[0][3] = origin[0];
+		matrix[1][3] = origin[1];
+		matrix[2][3] = origin[2];
 	}
 
+	/**
+	 *** To set Image matrix
+	 * @param origin array
+	 * @param normals matrix
+	 *** 
+	 */
+	public void SetMatrix(double origin[], double normals[][]) {
+		matrix[0][0] = normals[0][0];
+		matrix[1][0] = normals[1][0];
+		matrix[2][0] = normals[2][0];
+		matrix[0][1] = normals[0][1];
+		matrix[1][1] = normals[1][1];
+		matrix[2][1] = normals[2][1];
+		matrix[0][2] = normals[0][2];
+		matrix[1][2] = normals[1][2];
+		matrix[2][2] = normals[2][2];
+		matrix[0][3] = origin[0];
+		matrix[1][3] = origin[1];
+		matrix[2][3] = origin[2];
+		matrix[3][0] = 0.0;
+		matrix[3][1] = 0.0;
+		matrix[3][2] = 0.0;
+		matrix[3][3] = 1.0;
+		SetMatrix(matrix);
+	}
+
+	/**
+	 *** To set Image matrix
+	 * @param matrix
+	 *** 
+	 */
+	public void SetMatrix(double matrix[][]) {
+		this.matrix = matrix;
+		double tx = matrix[0][0];
+		double ty = matrix[1][0];
+		double tz = matrix[2][0];
+		double sx = matrix[0][1];
+		double sy = matrix[1][1];
+		double sz = matrix[2][1];
+		double nx = matrix[0][2];
+		double ny = matrix[1][2];
+		double nz = matrix[2][2];
+
+		spacing[0] = Math.sqrt(tx*tx + ty*ty + tz*tz);
+		spacing[1] = Math.sqrt(sx*sx + sy*sy + sz*sz);
+		spacing[2] = Math.sqrt(nx*nx + ny*ny + nz*nz);
+		norm_i[0] = matrix[0][0]  / spacing[0];
+		norm_i[1] = matrix[1][0]  / spacing[0];
+		norm_i[2] = matrix[2][0]  / spacing[0];
+		norm_j[0] = matrix[1][1] / spacing[1];
+		norm_j[1] = matrix[2][1] / spacing[1];
+		norm_j[2] = matrix[3][1] / spacing[1];
+		norm_k[0] = matrix[0][2] / spacing[2];
+		norm_k[1] = matrix[1][2] / spacing[2];
+		norm_k[2] = matrix[2][2] / spacing[2];
+		origin[0] = matrix[0][3];
+		origin[1] = matrix[1][3];
+		origin[2] = matrix[2][3];
+	}
+
+	/**
+	 *** To get Image matrix
+	 *** 
+	 * @return the image matrix
+	 */
 	public double[][] GetMatrix() {
 		return matrix;
 	}
 
-	// Image scalar type
-	public void SetScalarType(int t) {
-		scalarType = t;
+	/**
+	 *** To set Image scalar type
+	 * @param scalarType
+	 *** 
+	 */
+	public void SetScalarType(int scalarType) {
+		this.scalarType = scalarType;
 	}
 
+	/**
+	 *** To set Image scalar type to Int8
+	 *** 
+	 */
 	public void SetScalarTypeToInt8() {
 		scalarType = TYPE_INT8;
 	}
 
+	/**
+	 *** To set Image scalar type to Uint8
+	 *** 
+	 */
 	public void SetScalarTypeToUint8() {
 		scalarType = TYPE_UINT8;
 	}
 
+	/**
+	 *** To set Image scalar type to Int16
+	 *** 
+	 */
 	public void SetScalarTypeToInt16() {
 		scalarType = TYPE_INT16;
 	}
 
+	/**
+	 *** To set Image scalar type to Uint16
+	 *** 
+	 */
 	public void SetScalarTypeToUint16() {
 		scalarType = TYPE_UINT16;
 	}
 
+	/**
+	 *** To set Image scalar type to Int32
+	 *** 
+	 */
 	public void SetScalarTypeToInt32() {
 		scalarType = TYPE_INT32;
 	}
 
+	/**
+	 *** To set Image scalar type to Uint32
+	 *** 
+	 */
 	public void SetScalarTypeToUint32() {
 		scalarType = TYPE_UINT32;
 	}
 
+	/**
+	 *** To get Image scalar type
+	 *** 
+	 * @return the scalar type
+	 */
 	public int GetScalarType() {
 		return scalarType;
 	}
 
-	// Endian of image scalar (default is ENDIAN_BIG)
-	public void SetEndian(long e) {
-		endian = e;
+	/**
+	 *** To set Image Endian of image scalar (default is ENDIAN_BIG)
+	 * @param endian
+	 *** 
+	 */
+	public void SetEndian(long endian) {
+		this.endian = endian;
 	}
 
+	/**
+	 *** To get Image Endian of image scalar
+	 *** 
+	 * @return the endian
+	 */
 	public long GetEndian() {
 		return endian;
 	}
 
+	/**
+	 *** To get Image Size
+	 *** 
+	 * @return the Size
+	 */
 	public long GetImageSize() {
 		return dimensions[0] * dimensions[1] * dimensions[2] * GetScalarSize();
 	}
 
+	/**
+	 *** To get SubVolume Size
+	 *** 
+	 * @return Subvolume Size
+	 */
 	public long GetSubVolumeImageSize() {
 		return subDimensions[0] * subDimensions[1] * subDimensions[2]
 				* GetScalarSize();
 	}
 
+	/**
+	 *** To get size of image scalar
+	 *** 
+	 * @return the scalar size
+	 */
 	private long GetScalarSize() {
 		switch (scalarType) {
 		case TYPE_INT8:
