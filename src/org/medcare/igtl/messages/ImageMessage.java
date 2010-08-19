@@ -114,8 +114,8 @@ public class ImageMessage extends OpenIGTMessage {
 	 */
 	public ImageMessage(Header header, byte body[]) {
 		super(header, body);
-		image_header = new byte[Header.LENGTH];
-		System.arraycopy(body, 0, image_header, 0, Header.LENGTH);
+		image_header = new byte[IGTL_IMAGE_HEADER_SIZE];
+		System.arraycopy(body, 0, image_header, 0, IGTL_IMAGE_HEADER_SIZE);
 		SetImageHeader(image_header);
 	}
 
