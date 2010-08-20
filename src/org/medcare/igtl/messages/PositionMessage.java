@@ -39,7 +39,6 @@ public class PositionMessage extends OpenIGTMessage {
 
 	double position[] = new double[3]; // float 32bits
 	double quaternion[] = new double[4]; // float 32bits
-	private BytesArray bytesArray;
 	private byte[] position_data;
 	private int bodyLength;
 
@@ -63,23 +62,34 @@ public class PositionMessage extends OpenIGTMessage {
 	 */
 	public PositionMessage(Header header, byte body[]) {
 		super(header, body);
+		
+	}
+
+	/**
+	 *** To create body from body array
+	 * 
+	 *** 
+	 * @return true if inpacking is ok
+	 */
+	public boolean UnpackBody() {
 		int bodyLength = body.length;
 		position_data = new byte[bodyLength];
 		System.arraycopy(body, 0, position_data, 0, bodyLength);
 		SetPositionData(position_data);
+		return true;
 	}
 
 	/**
-	 *** To create body from position_data and imageData
+	 *** To create body from image_header and image_data
+	 *  SetPositionData must have called first
 	 * 
-	 * @param position_data byte arrary containing position_data
 	 *** 
 	 * @return the bytes array containing the body
 	 */
-	public byte[] CreateBody(byte position_data[]) {
+	public byte[] PackBody() {
 		body = new byte[Header.LENGTH + position_data.length];
 		System.arraycopy(position_data, 0, body, 0, position_data.length);
-		header = new Header(VERSION_2, "POSITION", deviceName, body);
+		header = new Header(VERSION, "POSITION", deviceName, body);
 		return body;
 	}
 

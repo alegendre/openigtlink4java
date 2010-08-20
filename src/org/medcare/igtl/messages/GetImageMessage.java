@@ -55,9 +55,19 @@ public class GetImageMessage extends OpenIGTMessage {
 	 *** 
 	 * @return the bytes array containing the body
 	 **/
-	public byte[] CreateBody() {
+	public byte[] PackBody() {
 		body = new byte[0];
-		header = new Header(VERSION_2, "GET_IMAGE", deviceName, body);
+		header = new Header(VERSION, "GET_IMAGE", deviceName, body);
 		return body;
+	}
+
+	/**
+	 *** To create body from body array
+	 * 
+	 *** 
+	 * @return true if inpacking is ok
+	 */
+	public boolean UnpackBody() {
+		return true;
 	}
 }

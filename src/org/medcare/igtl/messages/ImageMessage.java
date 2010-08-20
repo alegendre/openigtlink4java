@@ -49,7 +49,7 @@ public class ImageMessage extends OpenIGTMessage {
 	public static final int TYPE_FLOAT32 = 10;
 	public static final int TYPE_FLOAT64 = 11;
 
-	long version; // V unsigned int 16bits version
+	long version = IGTL_IMAGE_HEADER_VERSION; // V unsigned int 16bits version
 	long imageType = DTYPE_SCALAR; // T unsingned int 8bits image_type image_type
 	// image_ype
 	long scalarType = TYPE_UINT8; // S unsingned int 8bits scalarType
@@ -91,7 +91,6 @@ public class ImageMessage extends OpenIGTMessage {
 	// transformation matrix
 	double spacing[] = new double[3]; // float 32bits
 	private byte[] image_data;
-	private BytesArray bytesArray;
 	private byte[] image_header;
 
 	/**
@@ -114,25 +113,34 @@ public class ImageMessage extends OpenIGTMessage {
 	 */
 	public ImageMessage(Header header, byte body[]) {
 		super(header, body);
-		image_header = new byte[IGTL_IMAGE_HEADER_SIZE];
-		System.arraycopy(body, 0, image_header, 0, IGTL_IMAGE_HEADER_SIZE);
-		SetImageHeader(image_header);
 	}
 
 	/**
-	 *** To create body from image_header and imageData
+	 *** To create body from body array
 	 * 
-	 * @param image_header byte arrary containing image header
-	 * @param imageData byte arrary containing image data
+	 *** 
+	 * @return true if inpacking is ok
+	 */
+	public boolean UnpackBody() {
+		image_header = new byte[IGTL_IMAGE_HEADER_SIZE];
+		System.arraycopy(body, 0, image_header, 0, IGTL_IMAGE_HEADER_SIZE);
+		SetImageHeader(image_header);
+		return true;
+	}
+
+	/**
+	 *** To create body from image_header and image_data
+	 *  SetImageHeader and SetImageData must have called first
+	 * 
 	 *** 
 	 * @return the bytes array containing the body
 	 */
-	public byte[] CreateBody(byte image_header[], byte imageData[]) {
-		body = new byte[Header.LENGTH + image_header.length + imageData.length];
+	public byte[] PackBody() {
+		body = new byte[Header.LENGTH + image_header.length + image_data.length];
 		System.arraycopy(image_header, 0, body, 0, image_header.length);
-		System.arraycopy(imageData, 0, body, image_header.length,
-				imageData.length);
-		header = new Header(VERSION_2, "IMAGE", deviceName, body);
+		System.arraycopy(image_data, 0, body, image_header.length,
+				image_data.length);
+		header = new Header(VERSION, "IMAGE", deviceName, body);
 		return body;
 	}
 
@@ -262,6 +270,15 @@ public class ImageMessage extends OpenIGTMessage {
 	 */
 	public byte[] GetImageData() {
 		return this.image_data;
+	}
+
+	/**
+	 *** To Set image_data byte array
+	 *** 
+	 * @param image_data the image_data bytes array
+	 */
+	public void SetImageData(byte image_data[]) {
+		this.image_data = image_data;
 	}
 
 	/**

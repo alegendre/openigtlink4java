@@ -16,6 +16,7 @@
 
 package org.medcare.igtl.messages;
 
+import org.medcare.igtl.util.BytesArray;
 import org.medcare.igtl.util.Header;
 
 /**
@@ -25,13 +26,15 @@ import org.medcare.igtl.util.Header;
  * 
  **/
 
-public class OpenIGTMessage {
+public abstract class OpenIGTMessage {
 	// ------------------------------------------------------------------------
 
 	public String deviceName;
 	public byte[] body;
 	public Header header;
-	public static long VERSION_2 = 2L;
+	public BytesArray bytesArray;
+	private boolean isBodyUnpacked = false;
+	public static long VERSION = 2L;
 
 	/**
 	 *** Constructor to be used to create message to getBytes to send them
@@ -41,6 +44,7 @@ public class OpenIGTMessage {
 	 **/
 	public OpenIGTMessage(String deviceName) {
 		this.deviceName = deviceName;
+		this.bytesArray = new BytesArray();
 	}
 
 	/**
@@ -55,7 +59,44 @@ public class OpenIGTMessage {
 		this.header = header;
 		this.deviceName = header.getDeviceName();
 		this.body = body;
+		this.bytesArray = new BytesArray();
+		Unpack();
 	}
+
+	/**
+	 *** To control the checksum and unpack the body
+	 * 
+	 *** 
+	 * @return true if unpacking is ok
+	 */
+	public boolean Unpack() {
+		if (body.length > 0 && !isBodyUnpacked) {
+			if (header.getCrc() == bytesArray.crc64(body, body.length, 0L)) {
+				isBodyUnpacked = UnpackBody();
+				return isBodyUnpacked;
+			} else {
+				//TODO Add error management
+			}
+		}
+		return false;
+	}
+
+	/**
+	 *** To create body from body array
+	 * 
+	 *** 
+	 * @return true if unpacking is ok
+	 */
+	public abstract boolean UnpackBody();
+
+	/**
+	 *** To create body from image_header and image_data
+	 *  SetImageHeader and SetImageData must have called first
+	 * 
+	 *** 
+	 * @return the bytes array containing the body
+	 */
+	public abstract byte[] PackBody();
 
 	/**
 	 *** Unique device name.

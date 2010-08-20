@@ -16,36 +16,6 @@ public class MessageHandler {
 	String err = "MessageHandler.performRequest() failed.";
 	byte[] message;
 	Header header;
-	int IGTL_STATUS_INVALID = 0;
-	int IGTL_STATUS_OK = 1;
-	int IGTL_STATUS_UNKNOWN_ERROR = 2;
-	int IGTL_STATUS_PANICK_MODE = 3; /* emergency */
-	int IGTL_STATUS_NOT_FOUND = 4; /* file, configuration, device etc */
-	int IGTL_STATUS_ACCESS_DENIED = 5;
-	int IGTL_STATUS_BUSY = 6;
-	int IGTL_STATUS_TIME_OUT = 7; /* Time out / Connection lost */
-	int IGTL_STATUS_OVERFLOW = 8; /* Overflow / Can't be reached */
-	int IGTL_STATUS_CHECKSUM_ERROR = 9; /* Checksum error */
-	int IGTL_STATUS_CONFIG_ERROR = 10; /* Configuration error */
-	int IGTL_STATUS_RESOURCE_ERROR = 11; /*
-										 * Not enough resource (memory, storage
-										 * etc)
-										 */
-	int IGTL_STATUS_ILLEGAL_INSTRUCTION = 12; /* Illegal/Unknown instruction */
-	int IGTL_STATUS_NOT_READY = 13; /* Device not ready (starting up) */
-	int IGTL_STATUS_MANUAL_MODE = 14; /*
-									 * Manual mode (device does not accept
-									 * commands)
-									 */
-	int IGTL_STATUS_DISABLED = 15; /* Device disabled */
-	int IGTL_STATUS_NOT_PRESENT = 16; /* Device not present */
-	int IGTL_STATUS_UNKNOWN_VERSION = 17; /* Device version not known */
-	int IGTL_STATUS_HARDWARE_FAILURE = 18; /* Hardware failure */
-	int IGTL_STATUS_SHUT_DOWN = 19; /* Exiting / shut down in progress */
-
-	int TYPE_ENTRY_ONLY = 1; // Trajectory type
-	int TYPE_TARGET_ONLY = 2; // Trajectory type
-	int TYPE_ENTRY_TARGET = 3; // Trajectory type
 
 	/***************************************************************************
 	 * Default MessageQueueManager constructor.

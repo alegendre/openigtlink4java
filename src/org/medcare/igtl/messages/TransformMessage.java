@@ -48,7 +48,6 @@ public class TransformMessage extends OpenIGTMessage {
 	// NX_pixels // float 32bits n[0] (matrix[0][2])
 	// NY_pixels // float 32bits n[1] (matrix[1][2])
 	// NZ_pixels // float 32bits n[2] (matrix[2][2])
-	private BytesArray bytesArray;
 	private byte[] transform_data;
 
 	/**
@@ -71,22 +70,33 @@ public class TransformMessage extends OpenIGTMessage {
 	 */
 	public TransformMessage(Header header, byte body[]) {
 		super(header, body);
-		transform_data = new byte[IGTL_TRANSFORM_SIZE];
-		System.arraycopy(body, 0, transform_data, 0, IGTL_TRANSFORM_SIZE);
-		SetTransformData(transform_data);
+		
 	}
 
 	/**
-	 *** To create body from transform_data and imageData
+	 *** To create body from body array
 	 * 
-	 * @param transform_data byte arrary containing transform_data
+	 *** 
+	 * @return true if inpacking is ok
+	 */
+	public boolean UnpackBody() {
+		transform_data = new byte[IGTL_TRANSFORM_SIZE];
+		System.arraycopy(body, 0, transform_data, 0, IGTL_TRANSFORM_SIZE);
+		SetTransformData(transform_data);
+		return true;
+	}
+
+	/**
+	 *** To create body from image_header and image_data
+	 *  SetTransformData must have called first
+	 * 
 	 *** 
 	 * @return the bytes array containing the body
 	 */
-	public byte[] CreateBody(byte transform_data[]) {
+	public byte[] PackBody() {
 		body = new byte[Header.LENGTH + transform_data.length];
 		System.arraycopy(transform_data, 0, body, 0, transform_data.length);
-		header = new Header(VERSION_2, "TRANSFORM", deviceName, body);
+		header = new Header(VERSION, "TRANSFORM", deviceName, body);
 		return body;
 	}
 

@@ -58,7 +58,6 @@ public class StatusMessage extends OpenIGTMessage {
 	long subCode; // int 64bit
 	String errorName; // char[12]
 	String statusString; // char[ BodySize - 30 ]
-	private BytesArray bytesArray;
 	private byte[] status_data;
 
 	/**
@@ -81,23 +80,33 @@ public class StatusMessage extends OpenIGTMessage {
 	 */
 	public StatusMessage(Header header, byte body[]) {
 		super(header, body);
+	}
+
+	/**
+	 *** To create body from body array
+	 * 
+	 *** 
+	 * @return true if inpacking is ok
+	 */
+	public boolean UnpackBody() {
 		int bodyLength = body.length;
 		status_data = new byte[bodyLength];
 		System.arraycopy(body, 0, status_data, 0, bodyLength);
 		SetStatusData(status_data);
+		return true;
 	}
 
 	/**
-	 *** To create body from status_data and imageData
+	 *** To create body from image_header and image_data
+	 *  SetStatusData must have called first
 	 * 
-	 * @param status_data byte arrary containing status_data
 	 *** 
 	 * @return the bytes array containing the body
 	 */
-	public byte[] CreateBody(byte status_data[]) {
+	public byte[] PackBody() {
 		body = new byte[Header.LENGTH + status_data.length];
 		System.arraycopy(status_data, 0, body, 0, status_data.length);
-		header = new Header(VERSION_2, "STATUS", deviceName, body);
+		header = new Header(VERSION, "STATUS", deviceName, body);
 		return body;
 	}
 
