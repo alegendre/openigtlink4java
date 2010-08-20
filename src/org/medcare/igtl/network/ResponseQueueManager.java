@@ -58,7 +58,12 @@ public class ResponseQueueManager extends Thread {
 							res = responseHandler.performResponse();
 							if (!res)
 								System.out.println("PB responseHandler ");
+						} catch (AssertionError a) {
+							//TODO Add error management
+							System.out.println("PB responseHandler "
+									+ a.getLocalizedMessage());
 						} catch (Exception e) {
+							//TODO Add error management
 							System.out.println("PB responseHandler "
 									+ e.getLocalizedMessage());
 						} finally {

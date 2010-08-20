@@ -3,6 +3,8 @@
  */
 package org.medcare.igtl.network;
 
+import java.util.ArrayList;
+
 import org.medcare.igtl.util.Header;
 
 /**
@@ -16,6 +18,7 @@ public class MessageHandler {
 	String err = "MessageHandler.performRequest() failed.";
 	byte[] message;
 	Header header;
+	public enum Capability {GET_CAPABIL, GET_IMAGE, GET_IMGMETA, GET_LBMETA, GET_STATUS, GET_TRAJ, CAPABILITY, COLORTABLE, IMAGE, IMGMETA, POINT, POSITION, STATUS, STP_TDATA, STT_TDATA, TDATA, TRAJ, TRANSFORM};
 
 	/***************************************************************************
 	 * Default MessageQueueManager constructor.
@@ -32,107 +35,56 @@ public class MessageHandler {
 		this.message = body;
 	}
 
+
 	/**
 	 * Perform the requestjob on the message performRequest methods must be
-	 * adapted corresponding to the need of each use
+	 * corresponding to the need of each use
 	 * 
-	 * @return True if request job performed successfull
+	 * @return True if response job performed successfull
 	 * @throws Exception
 	 */
 	public boolean performRequest() throws Exception {
 		String messageType = this.header.getDataType();
-		if (messageType.equals("GET_CAPABIL")) {
-			// GetCapabilityMessage
-		} else if (messageType.equals("GET_IMAGE")) {
-			// GetImageMessage
-		} else if (messageType.equals("GET_IMGMETA")) {
-			// GetImageMetaMessage
-		} else if (messageType.equals("GET_LBMETA")) {
-			// GetLabelMetaMessage
-		} else if (messageType.equals("GET_STATUS")) {
-			// GetStatusMessage
-		} else if (messageType.equals("GET_TRAJ")) {
-			// GetTrajectoryMessage
-		} else if (messageType.equals("CAPABILITY")) {
-			// CapabilityMessage
-		} else if (messageType.equals("COLORTABLE")) {
-			// ColorTableMessage
-		} else if (messageType.equals("IMAGE")) {
-			// ImageMessage
-		} else if (messageType.equals("IMGMETA")) {
-			// ImageMetaMessage
-		} else if (messageType.equals("POINT")) {
-			// PointMessage
-		} else if (messageType.equals("POSITION")) {
-			// PositionMessage
-		} else if (messageType.equals("STATUS")) {
-			// StatusMessage
-		} else if (messageType.equals("STP_TDATA")) {
-			// StopTrackingDataMessage
-		} else if (messageType.equals("STT_TDATA")) {
-			// StopTrackingDataMessage
-		} else if (messageType.equals("TDATA")) {
-			// TrackingDataMessage
-		} else if (messageType.equals("TRAJ")) {
-			// TrajectoryMessage
-		} else if (messageType.equals("TRANSFORM")) {
-			// TransformMessage
-		} else {
-			// UnknownMessage
-		}
-		return false;
+		for (Capability capablity : Capability.values())
+                	if (messageType.equals(capablity.toString())) {
+				return perform(messageType);
+			}
+		throw new AssertionError("Unknown op: " + messageType);
 	}
 
 	/**
 	 * Perform the requestjob on the message performRequest methods must be
-	 * adapted corresponding to the need of each use
+	 * corresponding to the need of each use
 	 * 
 	 * @param message
-	 *            The message to be performed
-	 * @return True if request job performed successfull
+	 *            The message received
+	 * @return True if response job performed successfull
 	 * @throws Exception
 	 */
 	public boolean performRequest(byte[] message) throws Exception {
 		String messageType = this.header.getDataType();
-		if (messageType.equals("GET_CAPABIL")) {
-			// GetCapabilityMessage
-		} else if (messageType.equals("GET_IMAGE")) {
-			// GetImageMessage
-		} else if (messageType.equals("GET_IMGMETA")) {
-			// GetImageMetaMessage
-		} else if (messageType.equals("GET_LBMETA")) {
-			// GetLabelMetaMessage
-		} else if (messageType.equals("GET_STATUS")) {
-			// GetStatusMessage
-		} else if (messageType.equals("GET_TRAJ")) {
-			// GetTrajectoryMessage
-		} else if (messageType.equals("CAPABILITY")) {
-			// CapabilityMessage
-		} else if (messageType.equals("COLORTABLE")) {
-			// ColorTableMessage
-		} else if (messageType.equals("IMAGE")) {
-			// ImageMessage
-		} else if (messageType.equals("IMGMETA")) {
-			// ImageMetaMessage
-		} else if (messageType.equals("POINT")) {
-			// PointMessage
-		} else if (messageType.equals("POSITION")) {
-			// PositionMessage
-		} else if (messageType.equals("STATUS")) {
-			// StatusMessage
-		} else if (messageType.equals("STP_TDATA")) {
-			// StopTrackingDataMessage
-		} else if (messageType.equals("STT_TDATA")) {
-			// StopTrackingDataMessage
-		} else if (messageType.equals("TDATA")) {
-			// TrackingDataMessage
-		} else if (messageType.equals("TRAJ")) {
-			// TrajectoryMessage
-		} else if (messageType.equals("TRANSFORM")) {
-			// TransformMessage
-		} else {
-			// UnknownMessage
-		}
+		for (Capability capablity : Capability.values())
+                	if (messageType.equals(capablity.toString())) {
+				return perform(messageType, message);
+			}
+		throw new AssertionError("Unknown op: " + messageType);
+	}
+
+	public boolean perform(String messageType) {
 		return false;
+	}
+
+	public boolean perform(String messageType, byte[] message) {
+		return false;
+	}
+
+	/**
+	 *** Gets the enum of Types implemented in this Handler
+	 **/
+	public ArrayList<String> getCapability() {
+		ArrayList<String> capString = new ArrayList<String>();
+		for (Capability capablity : Capability.values())
+                	capString.add(capablity.toString());
+		return capString;
 	}
 }

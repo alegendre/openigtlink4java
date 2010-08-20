@@ -3,6 +3,8 @@
  */
 package org.medcare.igtl.network;
 
+import java.util.ArrayList;
+
 import org.medcare.igtl.util.Header;
 
 /**
@@ -16,36 +18,7 @@ public class ResponseHandler {
 	String err = "ResponseHandler.performResponse() failed.";
 	byte[] responseBody;
 	Header responseHeader;
-	int IGTL_STATUS_INVALID = 0;
-	int IGTL_STATUS_OK = 1;
-	int IGTL_STATUS_UNKNOWN_ERROR = 2;
-	int IGTL_STATUS_PANICK_MODE = 3; /* emergency */
-	int IGTL_STATUS_NOT_FOUND = 4; /* file, configuration, device etc */
-	int IGTL_STATUS_ACCESS_DENIED = 5;
-	int IGTL_STATUS_BUSY = 6;
-	int IGTL_STATUS_TIME_OUT = 7; /* Time out / Connection lost */
-	int IGTL_STATUS_OVERFLOW = 8; /* Overflow / Can't be reached */
-	int IGTL_STATUS_CHECKSUM_ERROR = 9; /* Checksum error */
-	int IGTL_STATUS_CONFIG_ERROR = 10; /* Configuration error */
-	int IGTL_STATUS_RESOURCE_ERROR = 11; /*
-										 * Not enough resource (memory, storage
-										 * etc)
-										 */
-	int IGTL_STATUS_ILLEGAL_INSTRUCTION = 12; /* Illegal/Unknown instruction */
-	int IGTL_STATUS_NOT_READY = 13; /* Device not ready (starting up) */
-	int IGTL_STATUS_MANUAL_MODE = 14; /*
-									 * Manual mode (device does not accept
-									 * commands)
-									 */
-	int IGTL_STATUS_DISABLED = 15; /* Device disabled */
-	int IGTL_STATUS_NOT_PRESENT = 16; /* Device not present */
-	int IGTL_STATUS_UNKNOWN_VERSION = 17; /* Device version not known */
-	int IGTL_STATUS_HARDWARE_FAILURE = 18; /* Hardware failure */
-	int IGTL_STATUS_SHUT_DOWN = 19; /* Exiting / shut down in progress */
-
-	int TYPE_ENTRY_ONLY = 1; // Trajectory type
-	int TYPE_TARGET_ONLY = 2; // Trajectory type
-	int TYPE_ENTRY_TARGET = 3; // Trajectory type
+	public enum Capability {GET_CAPABIL, GET_IMAGE, GET_IMGMETA, GET_LBMETA, GET_STATUS, GET_TRAJ, CAPABILITY, COLORTABLE, IMAGE, IMGMETA, POINT, POSITION, STATUS, STP_TDATA, STT_TDATA, TDATA, TRAJ, TRANSFORM};
 
 	/***************************************************************************
 	 * Default ResponseHandler constructor.
@@ -71,46 +44,11 @@ public class ResponseHandler {
 	 */
 	public boolean performResponse() throws Exception {
 		String messageType = this.responseHeader.getDataType();
-		if (messageType.equals("GET_CAPABIL")) {
-			// GetCapabilityMessage
-		} else if (messageType.equals("GET_IMAGE")) {
-			// GetImageMessage
-		} else if (messageType.equals("GET_IMGMETA")) {
-			// GetImageMetaMessage
-		} else if (messageType.equals("GET_LBMETA")) {
-			// GetLabelMetaMessage
-		} else if (messageType.equals("GET_STATUS")) {
-			// GetStatusMessage
-		} else if (messageType.equals("GET_TRAJ")) {
-			// GetTrajectoryMessage
-		} else if (messageType.equals("CAPABILITY")) {
-			// CapabilityMessage
-		} else if (messageType.equals("COLORTABLE")) {
-			// ColorTableMessage
-		} else if (messageType.equals("IMAGE")) {
-			// ImageMessage
-		} else if (messageType.equals("IMGMETA")) {
-			// ImageMetaMessage
-		} else if (messageType.equals("POINT")) {
-			// PointMessage
-		} else if (messageType.equals("POSITION")) {
-			// PositionMessage
-		} else if (messageType.equals("STATUS")) {
-			// StatusMessage
-		} else if (messageType.equals("STP_TDATA")) {
-			// StopTrackingDataMessage
-		} else if (messageType.equals("STT_TDATA")) {
-			// StopTrackingDataMessage
-		} else if (messageType.equals("TDATA")) {
-			// TrackingDataMessage
-		} else if (messageType.equals("TRAJ")) {
-			// TrajectoryMessage
-		} else if (messageType.equals("TRANSFORM")) {
-			// TransformMessage
-		} else {
-			// UnknownMessage
-		}
-		return false;
+		for (Capability capablity : Capability.values())
+                	if (messageType.equals(capablity.toString())) {
+				return perform(messageType);
+			}
+		throw new AssertionError("Unknown op: " + messageType);
 	}
 
 	/**
@@ -122,47 +60,30 @@ public class ResponseHandler {
 	 * @return True if response job performed successfull
 	 * @throws Exception
 	 */
-	public boolean performResponse(byte[] commands) throws Exception {
+	public boolean performResponse(byte[] commands) throws AssertionError {
 		String messageType = this.responseHeader.getDataType();
-		if (messageType.equals("GET_CAPABIL")) {
-			// GetCapabilityMessage
-		} else if (messageType.equals("GET_IMAGE")) {
-			// GetImageMessage
-		} else if (messageType.equals("GET_IMGMETA")) {
-			// GetImageMetaMessage
-		} else if (messageType.equals("GET_LBMETA")) {
-			// GetLabelMetaMessage
-		} else if (messageType.equals("GET_STATUS")) {
-			// GetStatusMessage
-		} else if (messageType.equals("GET_TRAJ")) {
-			// GetTrajectoryMessage
-		} else if (messageType.equals("CAPABILITY")) {
-			// CapabilityMessage
-		} else if (messageType.equals("COLORTABLE")) {
-			// ColorTableMessage
-		} else if (messageType.equals("IMAGE")) {
-			// ImageMessage
-		} else if (messageType.equals("IMGMETA")) {
-			// ImageMetaMessage
-		} else if (messageType.equals("POINT")) {
-			// PointMessage
-		} else if (messageType.equals("POSITION")) {
-			// PositionMessage
-		} else if (messageType.equals("STATUS")) {
-			// StatusMessage
-		} else if (messageType.equals("STP_TDATA")) {
-			// StopTrackingDataMessage
-		} else if (messageType.equals("STT_TDATA")) {
-			// StopTrackingDataMessage
-		} else if (messageType.equals("TDATA")) {
-			// TrackingDataMessage
-		} else if (messageType.equals("TRAJ")) {
-			// TrajectoryMessage
-		} else if (messageType.equals("TRANSFORM")) {
-			// TransformMessage
-		} else {
-			// UnknownMessage
-		}
+		for (Capability capablity : Capability.values())
+                	if (messageType.equals(capablity.toString())) {
+				return perform(messageType, commands);
+			}
+		throw new AssertionError("Unknown op: " + messageType);
+	}
+
+	public boolean perform(String messageType) {
 		return false;
+	}
+
+	public boolean perform(String messageType, byte[] commands) {
+		return false;
+	}
+
+	/**
+	 *** Gets the enum of Types implemented in this Handler
+	 **/
+	public ArrayList<String> getCapability() {
+		ArrayList<String> capString = new ArrayList<String>();
+		for (Capability capablity : Capability.values())
+                	capString.add(capablity.toString());
+		return capString;
 	}
 }

@@ -65,6 +65,10 @@ public class MessageQueueManager extends Thread {
 							res = messageHandler.performRequest();
 							if (!res)
 								System.out.println("PB messageHandler ");
+						} catch (AssertionError a) {
+							//TODO Add error management
+							System.out.println("PB messageHandler "
+									+ a.getLocalizedMessage());
 						} catch (Exception e) {
 							System.out.println("PB messageHandler "
 									+ e.getLocalizedMessage());
