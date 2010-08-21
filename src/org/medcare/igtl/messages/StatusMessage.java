@@ -77,8 +77,9 @@ public class StatusMessage extends OpenIGTMessage {
 	 * 
 	 * @param header
 	 * @param body
+	 * @throws Exception 
 	 */
-	public StatusMessage(Header header, byte body[]) {
+	public StatusMessage(Header header, byte body[]) throws Exception {
 		super(header, body);
 	}
 

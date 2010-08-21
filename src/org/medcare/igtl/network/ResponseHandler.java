@@ -5,6 +5,7 @@ package org.medcare.igtl.network;
 
 import java.util.ArrayList;
 
+import org.medcare.igtl.messages.StatusMessage;
 import org.medcare.igtl.util.Header;
 
 /**
@@ -16,7 +17,7 @@ import org.medcare.igtl.util.Header;
 public class ResponseHandler {
 
 	String err = "ResponseHandler.performResponse() failed.";
-	byte[] responseBody;
+	byte[] body;
 	Header responseHeader;
 	public enum Capability {GET_CAPABIL, GET_IMAGE, GET_IMGMETA, GET_LBMETA, GET_STATUS, GET_TRAJ, CAPABILITY, COLORTABLE, IMAGE, IMGMETA, POINT, POSITION, STATUS, STP_TDATA, STT_TDATA, TDATA, TRAJ, TRANSFORM};
 
@@ -32,7 +33,7 @@ public class ResponseHandler {
 	 **************************************************************************/
 	public ResponseHandler(Header header, byte[] body) {
 		this.responseHeader = header;
-		this.responseBody = body;
+		this.body = body;
 	}
 
 	/**
@@ -40,40 +41,44 @@ public class ResponseHandler {
 	 * corresponding to the need of each use
 	 * 
 	 * @return True if response job performed successfull
-	 * @throws Exception
+	 * @throws Exception received by perform method
 	 */
 	public boolean performResponse() throws Exception {
 		String messageType = this.responseHeader.getDataType();
+		boolean result = false;
 		for (Capability capablity : Capability.values())
-                	if (messageType.equals(capablity.toString())) {
-				return perform(messageType);
+			if (messageType.equals(capablity.toString())) {
+				return result = perform(messageType);
 			}
+		manageError(messageType, StatusMessage.STATUS_NOT_FOUND);
 		throw new AssertionError("Unknown op: " + messageType);
 	}
 
 	/**
-	 * Perform the responsejob performResponse methods must be adapted
-	 * corresponding to the need of each use
+	 * Perform the responsejob  this method must be adapted for each use
 	 * 
-	 * @param commands
-	 *            The commands to be performed
+	 * @param messageType
+	 *            The messageType
 	 * @return True if response job performed successfull
-	 * @throws Exception
+	 * @throws Exception CrcException will be thrown at crc check during message unpacking
+	 * Other exceptions can be thrown 
 	 */
-	public boolean performResponse(byte[] commands) throws AssertionError {
-		String messageType = this.responseHeader.getDataType();
-		for (Capability capablity : Capability.values())
-                	if (messageType.equals(capablity.toString())) {
-				return perform(messageType, commands);
-			}
-		throw new AssertionError("Unknown op: " + messageType);
-	}
-
-	public boolean perform(String messageType) {
+	public boolean perform(String messageType) throws Exception {
+		//FIXME Will have to create a new message corresponding to the type
 		return false;
 	}
 
-	public boolean perform(String messageType, byte[] commands) {
+	/**
+	 * manage error this method must be adapted for each use
+	 * 
+	 * @param messageType
+	 *            The messageType
+	 * @param status
+	 *            The status
+	 * @return True if response job performed successfull
+	 * @throws Exception
+	 */
+	public boolean manageError (String messageType, int status)throws Exception  {
 		return false;
 	}
 

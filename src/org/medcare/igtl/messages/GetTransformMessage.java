@@ -44,8 +44,9 @@ public class GetTransformMessage extends OpenIGTMessage {
 	 * 
 	 * @param header
 	 * @param body
+	 * @throws Exception 
 	 */
-	public GetTransformMessage(Header header, byte body[]) {
+	public GetTransformMessage(Header header, byte body[]) throws Exception {
 		super(header, body);
 	}
 

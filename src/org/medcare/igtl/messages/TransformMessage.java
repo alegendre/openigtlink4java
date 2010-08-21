@@ -67,8 +67,9 @@ public class TransformMessage extends OpenIGTMessage {
 	 * 
 	 * @param header
 	 * @param body
+	 * @throws Exception 
 	 */
-	public TransformMessage(Header header, byte body[]) {
+	public TransformMessage(Header header, byte body[]) throws Exception {
 		super(header, body);
 		
 	}

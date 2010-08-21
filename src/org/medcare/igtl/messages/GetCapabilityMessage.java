@@ -44,8 +44,9 @@ public class GetCapabilityMessage extends OpenIGTMessage {
 	 * 
 	 * @param header
 	 * @param body
+	 * @throws Exception 
 	 */
-	public GetCapabilityMessage(Header header, byte body[]) {
+	public GetCapabilityMessage(Header header, byte body[]) throws Exception {
 		super(header, body);
 	}
 

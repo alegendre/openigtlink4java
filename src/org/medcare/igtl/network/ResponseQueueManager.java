@@ -18,6 +18,7 @@ package org.medcare.igtl.network;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.medcare.igtl.util.CrcException;
 import org.medcare.igtl.util.Header;
 
 /**
@@ -59,11 +60,15 @@ public class ResponseQueueManager extends Thread {
 							if (!res)
 								System.out.println("PB responseHandler ");
 						} catch (AssertionError a) {
-							//TODO Add error management
+							//FIXME Add error management
 							System.out.println("PB responseHandler "
 									+ a.getLocalizedMessage());
+						} catch (CrcException c) {
+							//FIXME Add error management
+							System.out.println("PB responseHandler "
+									+ c.getLocalizedMessage());
 						} catch (Exception e) {
-							//TODO Add error management
+							//FIXME Add error management
 							System.out.println("PB responseHandler "
 									+ e.getLocalizedMessage());
 						} finally {

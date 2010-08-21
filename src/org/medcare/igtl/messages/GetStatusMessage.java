@@ -44,8 +44,9 @@ public class GetStatusMessage extends OpenIGTMessage {
 	 * 
 	 * @param header
 	 * @param body
+	 * @throws Exception 
 	 */
-	public GetStatusMessage(Header header, byte body[]) {
+	public GetStatusMessage(Header header, byte body[]) throws Exception {
 		super(header, body);
 	}
 

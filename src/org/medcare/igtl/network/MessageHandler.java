@@ -5,6 +5,7 @@ package org.medcare.igtl.network;
 
 import java.util.ArrayList;
 
+import org.medcare.igtl.messages.StatusMessage;
 import org.medcare.igtl.util.Header;
 
 /**
@@ -16,7 +17,7 @@ import org.medcare.igtl.util.Header;
 public class MessageHandler {
 
 	String err = "MessageHandler.performRequest() failed.";
-	byte[] message;
+	byte[] body;
 	Header header;
 	public enum Capability {GET_CAPABIL, GET_IMAGE, GET_IMGMETA, GET_LBMETA, GET_STATUS, GET_TRAJ, CAPABILITY, COLORTABLE, IMAGE, IMGMETA, POINT, POSITION, STATUS, STP_TDATA, STT_TDATA, TDATA, TRAJ, TRANSFORM};
 
@@ -32,7 +33,7 @@ public class MessageHandler {
 	 **************************************************************************/
 	public MessageHandler(Header header, byte[] body) {
 		this.header = header;
-		this.message = body;
+		this.body = body;
 	}
 
 
@@ -41,7 +42,7 @@ public class MessageHandler {
 	 * corresponding to the need of each use
 	 * 
 	 * @return True if response job performed successfull
-	 * @throws Exception
+	 * @throws Exception received by perform method
 	 */
 	public boolean performRequest() throws Exception {
 		String messageType = this.header.getDataType();
@@ -49,32 +50,35 @@ public class MessageHandler {
                 	if (messageType.equals(capablity.toString())) {
 				return perform(messageType);
 			}
+		manageError(messageType, StatusMessage.STATUS_NOT_FOUND);
 		throw new AssertionError("Unknown op: " + messageType);
 	}
 
 	/**
-	 * Perform the requestjob on the message performRequest methods must be
-	 * corresponding to the need of each use
+	 * Perform the requestjob  this method must be adapted for each use
 	 * 
-	 * @param message
-	 *            The message received
+	 * @param messageType
+	 *            The messageType
 	 * @return True if response job performed successfull
-	 * @throws Exception
+	 * @throws Exception CrcException will be thrown at crc check during message unpacking
+	 * Other exceptions can be thrown 
 	 */
-	public boolean performRequest(byte[] message) throws Exception {
-		String messageType = this.header.getDataType();
-		for (Capability capablity : Capability.values())
-                	if (messageType.equals(capablity.toString())) {
-				return perform(messageType, message);
-			}
-		throw new AssertionError("Unknown op: " + messageType);
-	}
-
-	public boolean perform(String messageType) {
+	public boolean perform (String messageType) throws Exception {
+		//FIXME Will have to create a new message corresponding to the type
 		return false;
 	}
 
-	public boolean perform(String messageType, byte[] message) {
+	/**
+	 * manage error this method must be adapted for each use
+	 * 
+	 * @param messageType
+	 *            The messageType
+	 * @param status
+	 *            The status
+	 * @return True if response job performed successfull
+	 * @throws Exception
+	 */
+	public boolean manageError (String messageType, int status) throws Exception {
 		return false;
 	}
 

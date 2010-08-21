@@ -110,8 +110,9 @@ public class ImageMessage extends OpenIGTMessage {
 	 * 
 	 * @param header
 	 * @param body
+	 * @throws Exception 
 	 */
-	public ImageMessage(Header header, byte body[]) {
+	public ImageMessage(Header header, byte body[]) throws Exception {
 		super(header, body);
 	}
 

@@ -44,8 +44,9 @@ public class GetImageMessage extends OpenIGTMessage {
 	 * 
 	 * @param header
 	 * @param body
+	 * @throws Exception 
 	 */
-	public GetImageMessage(Header header, byte body[]) {
+	public GetImageMessage(Header header, byte body[]) throws Exception {
 		super(header, body);
 	}
 

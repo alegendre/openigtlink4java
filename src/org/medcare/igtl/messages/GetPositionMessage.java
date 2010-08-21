@@ -44,8 +44,9 @@ public class GetPositionMessage extends OpenIGTMessage {
 	 * 
 	 * @param header
 	 * @param body
+	 * @throws Exception 
 	 */
-	public GetPositionMessage(Header header, byte body[]) {
+	public GetPositionMessage(Header header, byte body[]) throws Exception {
 		super(header, body);
 	}
 

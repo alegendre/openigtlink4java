@@ -17,6 +17,7 @@
 package org.medcare.igtl.messages;
 
 import org.medcare.igtl.util.BytesArray;
+import org.medcare.igtl.util.CrcException;
 import org.medcare.igtl.util.Header;
 
 /**
@@ -54,8 +55,9 @@ public abstract class OpenIGTMessage {
 	 *            header of this message
 	 * @param body
 	 *            bytes array containing message body
+	 * @throws Exception 
 	 **/
-	public OpenIGTMessage(Header header, byte[] body) {
+	public OpenIGTMessage(Header header, byte[] body) throws Exception {
 		this.header = header;
 		this.deviceName = header.getDeviceName();
 		this.body = body;
@@ -69,13 +71,13 @@ public abstract class OpenIGTMessage {
 	 *** 
 	 * @return true if unpacking is ok
 	 */
-	public boolean Unpack() {
+	public boolean Unpack() throws Exception {
 		if (body.length > 0 && !isBodyUnpacked) {
 			if (header.getCrc() == bytesArray.crc64(body, body.length, 0L)) {
 				isBodyUnpacked = UnpackBody();
 				return isBodyUnpacked;
 			} else {
-				//TODO Add error management
+				throw new CrcException("Crc control fail during unpacking");
 			}
 		}
 		return false;
